@@ -1,0 +1,7 @@
+https://git.ir/packtpub-hands-on-python-3-x-gui-programming/
+https://www.youtube.com/watch?v=m8JOLTuYrjQ
+https://www.youtube.com/watch?v=vde95l737PI&list=PLYf4Vz9V1ESrVD_NMDlwRjgo8jn2UNEND
+https://www.youtube.com/watch?v=UWxWcSxymHs&list=PLjPKPFvkBtZqKg8ugYihcxkWfnIDcwR4K&index=9
+
+buffering :
+https://www.pyimagesearch.com/2017/02/06/faster-video-file-fps-with-cv2-videocapture-and-opencv/
