@@ -1,0 +1,11 @@
+def coding (x):
+    x = round(x*10000)-128
+    if x>255:
+        return 255
+    elif x<0:
+        return 0
+    else:
+        return x
+
+def decoding(x):
+    return (128+x)/10000
