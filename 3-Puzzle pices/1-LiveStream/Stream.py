@@ -2,7 +2,7 @@ from time import time
 import cv2 as cv
 
 #IP Webcam Mobile application
-cap = cv.VideoCapture('rtsp://192.168.1.4:12525/h264_ulaw.sdp')
+cap = cv.VideoCapture(0)
 
 # Define the codec and create VideoWriter object
 
