@@ -6,6 +6,10 @@ import time
 import cv2 as cv
 import  pika
 import numpy as np
+import sys
+
+QUEUE= sys.argv[1]
+
 
 def decoding(x):
     return (128+x)/10000
@@ -37,8 +41,8 @@ parameters = pika.ConnectionParameters('localhost',
                                         '/',
                                         credentials)
 channel=pika.BlockingConnection(parameters).channel()
-channel.basic_qos(prefetch_count=10)
-channel.basic_consume(queue='Cam1',
+channel.basic_qos(prefetch_count=1)
+channel.basic_consume(queue=QUEUE,
                       on_message_callback=
                       lambda ch, method, properties, body:
                           Packet_Handeler_callback(
