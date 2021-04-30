@@ -43,7 +43,7 @@ class RunDesignerGUI():
                                                 '/',
                                                 credentials)
         channel=pika.BlockingConnection(parameters).channel()
-        channel.queue_declare(queue=CAMERA_NAME)
+        channel.queue_declare(queue=CAMERA_NAME, durable=False)
         channel.queue_bind(exchange='e.R',
                     queue=CAMERA_NAME)
         
