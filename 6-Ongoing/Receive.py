@@ -8,8 +8,8 @@ import  pika
 import numpy as np
 import sys
 
-QUEUE= sys.argv[1]
-# QUEUE='Cam1'
+#QUEUE= sys.argv[1]
+QUEUE='Cam1'
 
 def decoding_time(x):
     return (128+x)/10000
