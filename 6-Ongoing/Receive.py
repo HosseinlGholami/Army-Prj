@@ -1,80 +1,94 @@
-import concurrent.futures
-import logging
-import queue
-import threading
-import time
-import cv2 as cv
-import  pika
-import numpy as np
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout
+from PyQt5.QtGui import QPixmap
 import sys
+import cv2
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
+import numpy as np
+import pika
 
-#QUEUE= sys.argv[1]
-QUEUE='Cam1'
+QUEUE= sys.argv[1]
+# QUEUE= 'c2'
 
 def decoding_time(x):
     return (128+x)/10000
 def decoding_size(x):
     return x*8
 
-def Packet_Handeler_callback(ch, method, properties, body,queue):
-    frames=np.frombuffer(body,dtype=np.dtype('uint8'))
-    frames=frames.reshape(decoding_size(frames[0]), decoding_size(frames[1]), 3)
-    #param that cloud use in the futures
-    #frames[0][0][2]#packet number
+
+class Signals(QWidget):
+    change_pixmap_signal = pyqtSignal(np.ndarray)
     
-    queue.put(frames)
-    ch.basic_ack(delivery_tag = method.delivery_tag)
-
-def Viewer(queue, event):
-    """Pretend we're saving a number in the database."""
-    while not event.is_set() or not queue.empty():
-        message = queue.get()
-        cv.imshow("window",message)
-        #delay time between frame
-        #time.sleep(decoding_time(message[0][1][0]) )
-        cv.waitKey(1)
-        #logging.info(
-        #    "queue size:%d", queue.qsize()
-        #)
-    #cv.destroyWindow('window')
-    #logging.info("Consumer received event. Exiting")
-
-
-
-#Connect to RabbitMQ
-credentials = pika.PlainCredentials('guest', 'guest')
-parameters = pika.ConnectionParameters('localhost',
-                                       5672,
-                                        '/',
-                                        credentials)
-channel=pika.BlockingConnection(parameters).channel()
-channel.basic_qos(prefetch_count=30)
-channel.basic_consume(queue=QUEUE,
+class Rbmq(QThread):
+    def __init__(self,Queue):
+        super(Rbmq, self).__init__()
+        self.signal=Queue
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+        self.channel = self.connection.channel()
+        self.channel.basic_qos(prefetch_count=10)
+        self.channel.basic_consume(queue=QUEUE,
                       on_message_callback=
                       lambda ch, method, properties, body:
-                          Packet_Handeler_callback(
-                              ch, method, properties, body,pipeline
+                          self.dispatch(
+                              ch, method, properties, body,self.signal
                               ),
-                     #consumer_tag='1'
+                          auto_ack=True
                         )
-#prepare Loging format for debuging
-format = "%(asctime)s: %(message)s"
-logging.basicConfig(format=format, level=logging.INFO,
-                    datefmt="%H:%M:%S")
-#Queue for Buffring the frame
-pipeline = queue.Queue(maxsize=500)
-#Create event for stoping threads
-event = threading.Event()
-#Lunch trad
-with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-    executor.submit(Viewer  , pipeline, event)
-    #set counsumer on the specific queue
-    # try:
-    #channel start consuming
-    print(' [*] Waiting for messages')
-    channel.start_consuming()
-    # except:
-    #     channel.stop_consuming()
-    #     #stop the thread
-    #     print('Stop Thread')
-    #     event.set()
+        print('Waiting for message')
+    def run(self):
+        self.channel.start_consuming()
+        
+    def dispatch(self, channel, method, properties, body,Queue):
+        frames=np.frombuffer(body,dtype=np.dtype('uint8'))
+        frames=frames.reshape(decoding_size(frames[0]), decoding_size(frames[1]), 3)
+        self.signal.emit(frames)
+        # channel.basic_ack(delivery_tag = method.delivery_tag)
+
+
+class App(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Qt live label demo")
+        self.disply_width = 640
+        self.display_height = 480
+        # create the label that holds the image
+        self.image_label = QLabel(self)
+        self.image_label.resize(self.disply_width, self.display_height)
+        # create a text label
+        self.textLabel = QLabel('Webcam')
+
+        # create a vertical box layout and add the two labels
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.image_label)
+        vbox.addWidget(self.textLabel)
+        # set the vbox layout as the widgets layout
+        self.setLayout(vbox)
+        #
+        self.Queue=Signals()
+        #init the rabbitmq
+        self.rbmq=Rbmq(self.Queue.change_pixmap_signal)
+        # create the video capture thread
+        self.Queue.change_pixmap_signal.connect(self.update_image)
+        # start reading rabbit packet
+        self.rbmq.start()
+
+    @pyqtSlot(np.ndarray)
+    def update_image(self, cv_img):
+        """Updates the image_label with a new opencv image"""
+        qt_img = self.convert_cv_qt(cv_img)
+        self.image_label.setPixmap(qt_img)
+    
+    def convert_cv_qt(self, cv_img):
+        """Convert from an opencv image to QPixmap"""
+        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        h, w, ch = rgb_image.shape
+        bytes_per_line = ch * w
+        convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+        p = convert_to_Qt_format.scaled(self.disply_width, self.display_height, Qt.KeepAspectRatio)
+        return QPixmap.fromImage(p)
+    
+if __name__=="__main__":
+    app = QApplication(sys.argv)
+    a = App()
+    a.show()
+    sys.exit(app.exec_())

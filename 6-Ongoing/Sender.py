@@ -4,17 +4,14 @@ import pika
 import sys
 import numpy as np
 
-#ROUTING_KEY = sys.argv[1]
-#CAM_IP = sys.argv[2]
+ROUTING_KEY = sys.argv[1]
+CAM_IP = sys.argv[2]
 
-ROUTING_KEY='c.1'
-CAM_IP=0
+#ROUTING_KEY='c.1'
+#CAM_IP=0
 
 if CAM_IP =='0':
     CAM_IP=0
-
-print(CAM_IP)
-print(type(CAM_IP))
 
 def coding_time(x):
     x = round(x*10000)-128
