@@ -54,10 +54,25 @@ class RunDesignerGUI():
     def show_camera(self):
         CAMERA_NAME = self.ui.CamNameComboBox.currentText()
         CAMERA_IP=self.Data[CAMERA_NAME][0]
-                
+        FILTER_NAME=self.ui.FiltercomboBox.currentText()
         #connect reciever to server
+        bl_filter=str(0)
+        r_filter =str(0)
+        g_filter =str(0)
+        b_filter =str(0)
+        if FILTER_NAME =="None":
+            pass
+        elif FILTER_NAME =="Blur-Filter":
+            bl_filter=str(1)
+        elif FILTER_NAME =="Red-theme":
+            r_filter =str(1)
+        elif FILTER_NAME =="Green-theme":
+            g_filter =str(1)
+        elif FILTER_NAME =="Blue-theme":
+            b_filter =str(1)
+        
         pr=self.Data[CAMERA_NAME][1]
-        pr.start("python",["Receive.py",CAMERA_NAME])
+        pr.start("python",["Receive.py",CAMERA_NAME,bl_filter,r_filter,g_filter,b_filter])
         self.send_log("Receiver connect to queue")
         #the camera send data to server
         ps=self.Data[CAMERA_NAME][2]

@@ -1,16 +1,8 @@
 TODO:
 
-1-Add GUI to Reciver Program # semi done
+1-adjust GUI for Reciver
 
-{
-
-Should define queue inside the threads then push the rabbitmq data in the pyqt therad to send signal to GUI
-
-}
-
-
-
-2- Handle sleep time inside queue 
+2- Handle and buffering frames
 
 3- Dockerize the sender application
 

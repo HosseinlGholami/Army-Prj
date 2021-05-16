@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="acamTab">
      <property name="toolTip">
@@ -231,7 +231,7 @@
        <string>Select filter</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBox_2">
+     <widget class="QComboBox" name="FiltercomboBox">
       <property name="geometry">
        <rect>
         <x>100</x>
@@ -247,7 +247,22 @@
       </item>
       <item>
        <property name="text">
-        <string>Filter-1</string>
+        <string>Blur-Filter</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Red-theme</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Green-theme</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Blue-theme</string>
        </property>
       </item>
      </widget>
