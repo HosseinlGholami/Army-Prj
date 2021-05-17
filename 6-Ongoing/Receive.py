@@ -65,8 +65,7 @@ class App(QWidget):
         self.image_label = QLabel(self)
         self.image_label.resize(self.disply_width, self.display_height)
         # create a text label
-        self.textLabel = QLabel('Webcam')
-        
+        self.textLabel = QLabel('This application designed by HosseinlGholami')
         # create a vertical box layout and add the two labels
         vbox = QVBoxLayout()
         vbox.addWidget(self.image_label)
@@ -78,7 +77,10 @@ class App(QWidget):
         self.red=rF
         self.green=gF
         self.blue=bF
-        #==============
+        
+        self.control_server_and_signals()
+        
+    def control_server_and_signals(self):
         self.credentials = pika.PlainCredentials('guest', 'guest')
         self.parameters  = pika.ConnectionParameters('localhost',
                                        5672,
