@@ -113,33 +113,50 @@
    </property>
    <widget class="QMenu" name="menuexit">
     <property name="title">
-     <string>Blur-filter</string>
+     <string>File</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuRed_filter">
     <property name="title">
-     <string>Red-filter</string>
+     <string>Filter</string>
     </property>
-   </widget>
-   <widget class="QMenu" name="menuGreen_filter">
-    <property name="title">
-     <string>Green-filter</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuBlue_filter">
-    <property name="title">
-     <string>Blue-filter</string>
-    </property>
+    <addaction name="actionBlur_Filter"/>
+    <addaction name="actionRed_Filter"/>
+    <addaction name="actionGreen_Filter"/>
+    <addaction name="actionBlue_Filter"/>
    </widget>
    <addaction name="menuexit"/>
    <addaction name="menuRed_filter"/>
-   <addaction name="menuGreen_filter"/>
-   <addaction name="menuBlue_filter"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionblur_filter">
    <property name="text">
     <string>blur-filter</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="actionBlur_Filter">
+   <property name="text">
+    <string>Blur Filter</string>
+   </property>
+  </action>
+  <action name="actionRed_Filter">
+   <property name="text">
+    <string>Red Filter</string>
+   </property>
+  </action>
+  <action name="actionGreen_Filter">
+   <property name="text">
+    <string>Green Filter</string>
+   </property>
+  </action>
+  <action name="actionBlue_Filter">
+   <property name="text">
+    <string>Blue Filter</string>
    </property>
   </action>
  </widget>

@@ -1,25 +1,23 @@
-import sys
-from PyQt5 import QtWidgets,QtGui
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget
+import sys
 import cv2
-from ReceiveUI import Ui_MainWindow
-import pika
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
 import numpy as np
+import pika
 
+# QUEUE= sys.argv[1]
+# blF=int(sys.argv[2])
+# rF =int(sys.argv[3])
+# gF =int(sys.argv[4])
+# bF =int(sys.argv[5])
 
-QUEUE= sys.argv[1]
-blF=int(sys.argv[2])
-rF =int(sys.argv[3])
-gF =int(sys.argv[4])
-bF =int(sys.argv[5])
-
-# QUEUE= 'Cam1'
-# blF=False
-# rF =False
-# gF =True
-# bF =False
+QUEUE= 'Cam1'
+blF=False
+rF =False
+gF =True
+bF =False
 
 
 def decoding_time(x):
@@ -44,7 +42,7 @@ class Rbmq(QThread):
                               ch, method, properties, body,self.signal
                               ),
                           consumer_tag="ct_test",
-                        #   auto_ack=True
+                          # auto_ack=True
                         )
         print('Waiting for message')
     def run(self):
@@ -57,25 +55,31 @@ class Rbmq(QThread):
         channel.basic_ack(delivery_tag = method.delivery_tag)
 
 
-class RunDesignerGUI():
+class App(QWidget):
     def __init__(self,blF,rF,gF,bF):
-        app = QtWidgets.QApplication(sys.argv)
-        self.MainWindow = QtWidgets.QMainWindow()
-        
+        super().__init__()
+        self.setWindowTitle("Qt live label demo")
+        self.disply_width = 640
+        self.display_height = 480
+        # create the label that holds the image
+        self.image_label = QLabel(self)
+        self.image_label.resize(self.disply_width, self.display_height)
+        # create a text label
+        self.textLabel = QLabel('This application designed by HosseinlGholami')
+        # create a vertical box layout and add the two labels
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.image_label)
+        vbox.addWidget(self.textLabel)
+        # set the vbox layout as the widgets layout
+        self.setLayout(vbox)
+        #===============================================
         self.blur=blF
         self.red=rF
         self.green=gF
         self.blue=bF
         
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.MainWindow)
-
-        self.widget_action()
         self.control_server_and_signals()
         
-        
-        self.MainWindow.show()
-        sys.exit(app.exec_())
     def control_server_and_signals(self):
         self.credentials = pika.PlainCredentials('guest', 'guest')
         self.parameters  = pika.ConnectionParameters('localhost',
@@ -97,27 +101,11 @@ class RunDesignerGUI():
         self.connection.close()
         event.accept()
         
-    def widget_action(self):
-        self.ui.actionBlur_Filter.triggered.connect(self.blurF)
-        self.ui.actionRed_Filter.triggered.connect(self.redF)
-        self.ui.actionGreen_Filter.triggered.connect(self.greenF)
-        self.ui.actionBlue_Filter.triggered.connect(self.blueF)
-        
-        
-    def blurF(self):
-        self.blur=not(self.blur)
-    def redF(self):
-        self.red=not(self.red)
-    def greenF(self):
-        self.green=not(self.green)
-    def blueF(self):
-        self.blue=not(self.blue)
     # @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
         qt_img = self.convert_cv_qt(cv_img)
-        self.ui.image_label.setPixmap(qt_img)
-        
+        self.image_label.setPixmap(qt_img)
         
     
     def convert_cv_qt(self, cv_img):
@@ -136,11 +124,16 @@ class RunDesignerGUI():
         if self.green:
             green_img  = np.full(rgb_image.shape, (0,255,0), np.uint8)
             rgb_image = cv2.addWeighted(rgb_image, 0.8, green_img, 0.2, 0)
+            
+        
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.ui.image_label.width(), self.ui.image_label.height(), Qt.KeepAspectRatio)
+        p = convert_to_Qt_format.scaled(self.disply_width, self.display_height, Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
     
-if __name__ == "__main__":
-    RunDesignerGUI(blF,rF,gF,bF)
+if __name__=="__main__":
+    app = QApplication(sys.argv)
+    a = App(blF,rF,gF,bF)
+    a.show()
+    sys.exit(app.exec_())
