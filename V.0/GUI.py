@@ -73,7 +73,6 @@ class RunDesignerGUI():
         
         pr=self.Data[CAMERA_NAME][1]
         pr.start("python",["Receive.py",CAMERA_NAME,bl_filter,r_filter,g_filter,b_filter])
-        
         self.send_log("Receiver connect to queue")
         #the camera send data to server
         ps=self.Data[CAMERA_NAME][2]

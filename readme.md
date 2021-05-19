@@ -1,11 +1,25 @@
 TODO:
 
-1-adjust GUI for Reciver
+1-handel GUI.py for new form of application
 
-2- Handle and buffering frames
+2- rewrite the sender with send to exchange approach
 
-3- Dockerize the sender application
+2- rewrite the receiver : create queue when want to receiver  based on the exchange of the sender program 
 
-4- create server app for recording Raw data
+(with this approach we can understand and test the hardware limitation and distinct the network delay from Hardware delay)
+
+3-rewrite the sender with recording scenarios 
+
+
+
+4- Dockerize the sender application(when the esp32-cam and RTSP servers get okayed- right now I cant export the port from inside docker for receiving camera data)
 
 5- create client app
+
+
+
+----------------------------------------------------------
+
+if some problem on fast framing arise :
+
+​		 buffering frames
