@@ -1,10 +1,6 @@
 import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import QProcess
 from UI import Ui_MainWindow
-import pika
-
-
 
 class RunDesignerGUI():
     def __init__(self):
@@ -21,65 +17,24 @@ class RunDesignerGUI():
 
         self.MainWindow.show()
         sys.exit(app.exec_())
-    
+
+    #import function
+    from util import add_camera,show_camera, stop_record_cam_data, start_record_cam_data, stop_send_cam_data, start_send_cam_data
+ 
     def widget_action(self):
         self.ui.actionClose.setStatusTip("Exit the application")
         self.ui.actionClose.triggered.connect(self.close_GUI)
+        #add camera
         self.ui.addc_Button.clicked.connect(self.add_camera)
-        self.ui.ShowButton.clicked.connect(self.show_camera)
-
-    def add_camera(self):
-        CAMERA_IP=self.ui.CIplineEdit.text()
-        CAMERA_NAME=self.ui.CNamelineEdit.text()
-        #add to combo box
-        self.ui.CamNameComboBox.addItem(CAMERA_NAME)
-        #save the file as dict
-        self.Data.update({CAMERA_NAME:[CAMERA_IP, QProcess() , QProcess() ]})
-        
-        #connect to server and create Queue
-        credentials = pika.PlainCredentials('guest', 'guest')
-        parameters = pika.ConnectionParameters('localhost',
-                                                5672,
-                                                '/',
-                                                credentials)
-        channel=pika.BlockingConnection(parameters).channel()
-        channel.queue_declare(queue=CAMERA_NAME, durable=False)
-        channel.queue_bind(exchange='e.R',
-                    queue=CAMERA_NAME)
-        
-        
-        self.send_log("Queue has created")
-        
+        #send button
+        self.ui.StrSenButton.clicked.connect(self.start_send_cam_data)
+        self.ui.StpSenButton.clicked.connect(self.stop_send_cam_data)
+        #recording server button
+        self.ui.StrCapButton.clicked.connect(self.start_record_cam_data)
+        self.ui.StpCapButton.clicked.connect(self.stop_record_cam_data)
+        #client application, show camera
+        self.ui.ShowCam_Button.clicked.connect(self.show_camera)
     
-    def show_camera(self):
-        CAMERA_NAME = self.ui.CamNameComboBox.currentText()
-        CAMERA_IP=self.Data[CAMERA_NAME][0]
-        FILTER_NAME=self.ui.FiltercomboBox.currentText()
-        #connect reciever to server
-        bl_filter=str(0)
-        r_filter =str(0)
-        g_filter =str(0)
-        b_filter =str(0)
-        if FILTER_NAME =="None":
-            pass
-        elif FILTER_NAME =="Blur-Filter":
-            bl_filter=str(1)
-        elif FILTER_NAME =="Red-theme":
-            r_filter =str(1)
-        elif FILTER_NAME =="Green-theme":
-            g_filter =str(1)
-        elif FILTER_NAME =="Blue-theme":
-            b_filter =str(1)
-        
-        pr=self.Data[CAMERA_NAME][1]
-        pr.start("python",["Receive.py",CAMERA_NAME,bl_filter,r_filter,g_filter,b_filter])
-        
-        self.send_log("Receiver connect to queue")
-        #the camera send data to server
-        ps=self.Data[CAMERA_NAME][2]
-        ps.start("python",["Sender.py",CAMERA_NAME,CAMERA_IP])
-        self.send_log("Sender Send Data to queue")
-        
 
     def send_log(self,txt):
         pre_txt=self.ui.LogtextBrowser.toPlainText()
@@ -92,8 +47,6 @@ class RunDesignerGUI():
     def update_widgets(self):
         self.MainWindow.setWindowTitle("JANGAL")
             
-        
-
 
 if __name__ == "__main__":
     RunDesignerGUI()    

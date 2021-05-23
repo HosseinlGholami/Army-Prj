@@ -15,6 +15,7 @@ every_frame=list()
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
+
 period=time()
 while True:
     # Capture frame-by-frame
