@@ -35,7 +35,6 @@ class RunDesignerGUI():
         #client application, show camera
         self.ui.ShowCam_Button.clicked.connect(self.show_camera)
     
-
     def send_log(self,txt):
         pre_txt=self.ui.LogtextBrowser.toPlainText()
         if (pre_txt==''):
