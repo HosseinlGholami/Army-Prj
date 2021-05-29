@@ -6,23 +6,26 @@ passwd='guest'
 host='localhost'
 port='15672'
   
-exchange_name='hey'
+exchange_name='hey1'
 
-
-https://funprojects.blog/2019/11/08/rabbitmq-rest-api/
-
-url ='http://'+host+':'+'port'+'/api/exchanges/%2f/'+exchange_name
-# r2 = requests.put(url,
-#                   data ="{""type"":""direct"",""durable"":true}",
-#                   auth=(user,passwd)
-#                   )
-
-
-# url = 'http://'+host+':'+port+'/api/exchanges'
-# r = requests.get(url, auth=(user,passwd))
-
-# if exchange_name in [x['name'] for x in r.json()]:
-#     print('the exchange has exist change the exchange name')
-# else:
-#     print("salam")
+def create_exchange(user,passwd,host,port,exchange_name):
+        # defining the api-endpoint
+    API_ENDPOINT = f"http://{host}:{port}/api/exchanges/%2f/{exchange_name}"
+    # your source code here
+    headers = {'content-type': 'application/json'}
+    # data to be sent to api
+    pdata = {"type":"direct"}
     
+    # sending post request and saving response as response object
+    r = requests.put(url = API_ENDPOINT ,auth=(user, passwd),
+                      json = pdata,
+                      headers=headers)
+    try:
+        r.json()
+        return False
+    except :
+        return True
+
+
+x=create_exchange(user,passwd,host,port,exchange_name)
+print(x)

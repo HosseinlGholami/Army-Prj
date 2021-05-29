@@ -1,5 +1,25 @@
 TODO:
 
+Search==>exchange type and config!
+
+​				direct + fanout + headers +Topic! which one i should  choose for transmitting the camera frame
+
+to design the sender cammera and config routing key 
+
+
+
+1-add camera sender inside docker in to the  add_camera function ---> for version.2
+
+2-send came name ip and .... to integrator tools----->for version.3
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------
+
 1-handel GUI.py for new form of application
 
 2- rewrite the sender with send to exchange approach
