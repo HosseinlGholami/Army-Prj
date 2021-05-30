@@ -4,8 +4,9 @@ import pika
 import sys
 import numpy as np
 
-ROUTING_KEY = sys.argv[1]
-CAM_IP = sys.argv[2]
+EXCHANGE_NAME = sys.argv[1]
+ROUTING_KEY = sys.argv[2]
+CAM_IP = sys.argv[3]
 
 # ROUTING_KEY='c.1'
 # CAM_IP=0
@@ -60,7 +61,7 @@ else:
                         
             #send frame to rabbit mq to transmit it to client
             channel.basic_publish(
-            exchange='e.R',
+            exchange=EXCHANGE_NAME,
             routing_key=ROUTING_KEY,
             body=frame.tobytes(),
             properties=pika.BasicProperties(delivery_mode = 1,)

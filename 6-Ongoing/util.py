@@ -45,11 +45,18 @@ def start_record_cam_data(self):
     self.send_log('start record cam data')
 
 def stop_send_cam_data(self):
+    exchange_name=self.ui.CamNameComboBox.currentText()
+    process=self.Data[exchange_name][1]
+    process.kill()
     self.send_log('stop send data to server')
 
 def start_send_cam_data(self):
+    exchange_name=self.ui.CamNameComboBox.currentText()
+    CAMERA_IP=self.Data[exchange_name][0]
+    process=self.Data[exchange_name][1]
+    ROUTING_KEY='heyhey'
+    process.start("python",["Sender.py",exchange_name,ROUTING_KEY,CAMERA_IP])
     self.send_log('start send data to server')
-
 
 
 def add_camera(self):
@@ -59,6 +66,7 @@ def add_camera(self):
     serverport=15672
     cam_ip=self.ui.CIP_lineEdit.text()#0#
     exchange_name=self.ui.SE_lineEdit.text()#'ex_salam'#
+    self.Data.update({exchange_name:[cam_ip, QProcess()]})
     flag=True
     #check the camera
     if cam_ip=='0':
@@ -70,7 +78,12 @@ def add_camera(self):
     else:
         self.send_log("camera is valid")
     #check authoriation
-    rabbit_authoriation=call_rabbitmq_api_validation(serverip,serverport,username,password)
+    try:
+        rabbit_authoriation=call_rabbitmq_api_validation(serverip,serverport,username,password)
+    except:
+        self.send_log("rabbit is offline")
+        rabbit_authoriation={'error':'offline'}
+    
     if 'name' in rabbit_authoriation:
         self.send_log("connection to server is ok")
     else:

@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="acamTab">
      <property name="toolTip">
@@ -186,7 +186,7 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>60</y>
+        <y>80</y>
         <width>91</width>
         <height>31</height>
        </rect>
@@ -218,11 +218,59 @@
        </rect>
       </property>
      </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>61</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Select Filter</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="FiltercomboBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>50</y>
+        <width>231</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>None</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Blur-Filter</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Red-theme</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Green-theme</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Blue-theme</string>
+       </property>
+      </item>
+     </widget>
      <widget class="QPushButton" name="StpSenButton">
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>60</y>
+        <y>80</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -289,19 +337,6 @@
         <string>Each 5 mintues</string>
        </property>
       </item>
-     </widget>
-     <widget class="Line" name="line">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>100</y>
-        <width>371</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">

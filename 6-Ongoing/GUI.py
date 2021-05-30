@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets
 from UI import Ui_MainWindow
+from PyQt5.QtCore import QProcess
 
 class RunDesignerGUI():
     def __init__(self):
