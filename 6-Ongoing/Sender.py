@@ -5,10 +5,9 @@ import sys
 import numpy as np
 
 EXCHANGE_NAME = sys.argv[1]
-ROUTING_KEY = sys.argv[2]
-CAM_IP = sys.argv[3]
+CAM_IP = sys.argv[2]
 
-# ROUTING_KEY='c.1'
+# EXCHANGE_NAME = 'c1'
 # CAM_IP=0
 
 if CAM_IP =='0':
@@ -62,9 +61,9 @@ else:
             #send frame to rabbit mq to transmit it to client
             channel.basic_publish(
             exchange=EXCHANGE_NAME,
-            routing_key=ROUTING_KEY,
+            routing_key='',
             body=frame.tobytes(),
-            properties=pika.BasicProperties(delivery_mode = 1,)
+            properties=pika.BasicProperties(delivery_mode = 1)
             )
             
             #stop sending frame it's just the demo

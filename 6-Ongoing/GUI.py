@@ -6,6 +6,7 @@ from PyQt5.QtCore import QProcess
 class RunDesignerGUI():
     def __init__(self):
         self.Data=dict()
+        self.process=list()
 
         app = QtWidgets.QApplication(sys.argv)
         self.MainWindow = QtWidgets.QMainWindow()

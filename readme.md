@@ -1,10 +1,6 @@
 TODO:
 
-Search==>exchange type and config!
-
-​				direct + fanout + headers +Topic! which one i should  choose for transmitting the camera frame
-
-to design the sender cammera and config routing key 
+implements the integration wiht redis for being shakh and work inside the networks
 
 
 

@@ -23,7 +23,7 @@ def create_exchange(host,port,user,passwd,exchange_name):
     # your source code here
     headers = {'content-type': 'application/json'}
     # data to be sent to api
-    pdata = {"type":"direct"}
+    pdata = {"type":"fanout"}
     # sending post request and saving response as response object
     r = requests.put(url = API_ENDPOINT ,auth=(user, passwd),
                       json = pdata,
@@ -37,12 +37,18 @@ def create_exchange(host,port,user,passwd,exchange_name):
 
 #GUI Function
 def show_camera(self):
+    #we might have bug on this version since when we close the process somethings leaves here
+    username=self.ui.RUsername_lineEdit.text()
+    password=self.ui.RPassword_lineEdit.text()
+    exchange_name=self.ui.RCamNameComboBox.currentText()
+    self.process.append(QProcess())
+    self.process[-1].start("python",["Receiver.py",username,password,exchange_name])
     self.send_log('show camera')
-def stop_record_cam_data(self):
-    self.send_log('stop record cam data')
 
+def stop_record_cam_data(self):
+    self.send_log('stop record cam data - this function its not implemented yet')
 def start_record_cam_data(self):
-    self.send_log('start record cam data')
+    self.send_log('start record cam data- this function its not implemented yet')
 
 def stop_send_cam_data(self):
     exchange_name=self.ui.CamNameComboBox.currentText()
@@ -54,14 +60,14 @@ def start_send_cam_data(self):
     exchange_name=self.ui.CamNameComboBox.currentText()
     CAMERA_IP=self.Data[exchange_name][0]
     process=self.Data[exchange_name][1]
-    ROUTING_KEY='heyhey'
-    process.start("python",["Sender.py",exchange_name,ROUTING_KEY,CAMERA_IP])
+    #ROUTING_KEY='heyhey'
+    process.start("python",["Sender.py",exchange_name,CAMERA_IP])
     self.send_log('start send data to server')
 
 
 def add_camera(self):
-    username=self.ui.SUsername_lineEdit.text()#'guest'#
-    password=self.ui.SPassword_lineEdit.text()#'gues1t'#
+    username=self.ui.SUsername_lineEdit.text()
+    password=self.ui.SPassword_lineEdit.text()
     serverip='localhost'
     serverport=15672
     cam_ip=self.ui.CIP_lineEdit.text()#0#
