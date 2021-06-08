@@ -12,18 +12,24 @@ class a():
 self=a()
 #==================================================================
 # https://rawcdn.githack.com/rabbitmq/rabbitmq-server/v3.8.16/deps/rabbitmq_management/priv/www/api/index.html
-    
+def get_active_exchange(user,passwd,host,port):    
+    a=list()
+    GET_VHOST = f"http://{host}:{port}/api/definitions"
+    r = requests.get(url = GET_VHOST ,auth=(user, passwd),)
+    return [ex['name'] for ex in dict(r.json())['exchanges']]
+#=================
 def call_rabbitmq_api_validation(host, port, user, passwd):
   url = 'http://%s:%s/api/whoami' % (host, port)
   r = requests.get(url, auth=(user,passwd))
   return dict(r.json())
+#================
 def create_exchange(host,port,user,passwd,exchange_name):
         # defining the api-endpoint
     API_ENDPOINT = f"http://{host}:{port}/api/exchanges/%2f/{exchange_name}"
     # your source code here
     headers = {'content-type': 'application/json'}
     # data to be sent to api
-    pdata = {"type":"fanout"}
+    pdata = {"type":"fanout",'durable': False,"auto_delete":True}
     # sending post request and saving response as response object
     r = requests.put(url = API_ENDPOINT ,auth=(user, passwd),
                       json = pdata,

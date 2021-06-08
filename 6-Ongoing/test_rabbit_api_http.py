@@ -26,6 +26,14 @@ def create_exchange(user,passwd,host,port,exchange_name):
     except :
         return True
 
+def get_active_exchange(user,passwd,host,port):    
+    a=list()
+    GET_VHOST = f"http://{host}:{port}/api/definitions"
+    r = requests.get(url = GET_VHOST ,auth=(user, passwd),)
+    return [ex['name'] for ex in dict(r.json())['exchanges']]
+    
 
 x=create_exchange(user,passwd,host,port,exchange_name)
+
 print(x)
+print(get_active_exchange(user,passwd,host,port))

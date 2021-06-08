@@ -6,9 +6,11 @@
 
 *use active exchange inside rabbit for get access exchange through other application.
 
-*define new user (on server application)
+
 
 *create authentication inside client + previewer for windowing
+
+*define new user (on server application)
 
 
 
