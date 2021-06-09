@@ -186,7 +186,7 @@
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>60</y>
+        <y>80</y>
         <width>91</width>
         <height>31</height>
        </rect>
@@ -199,7 +199,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>20</y>
+        <y>40</y>
         <width>71</width>
         <height>21</height>
        </rect>
@@ -212,7 +212,7 @@
       <property name="geometry">
        <rect>
         <x>120</x>
-        <y>20</y>
+        <y>40</y>
         <width>231</width>
         <height>21</height>
        </rect>
@@ -222,7 +222,7 @@
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>60</y>
+        <y>80</y>
         <width>81</width>
         <height>31</height>
        </rect>
@@ -231,137 +231,55 @@
        <string>Stop Sender</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="StrCapButton">
+     <widget class="QPushButton" name="delete_cam_Button">
       <property name="geometry">
        <rect>
-        <x>30</x>
-        <y>160</y>
-        <width>91</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Start Capture</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="StpCapButton">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>160</y>
+        <x>310</x>
+        <y>80</y>
         <width>81</width>
         <height>31</height>
        </rect>
       </property>
       <property name="text">
-       <string>Stop Capture</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_24">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>130</y>
-        <width>101</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Select Recoed Rule</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="RecRulecomboBox">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>130</y>
-        <width>231</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <item>
-       <property name="text">
-        <string>Each mintues</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Each 5 mintues</string>
-       </property>
-      </item>
-     </widget>
-     <widget class="Line" name="line">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>100</y>
-        <width>371</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <string>delete camera</string>
       </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Receiver Controller</string>
+      <string>Client-Management</string>
      </attribute>
-     <widget class="QLabel" name="label_21">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>30</y>
-        <width>71</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Camera name</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="RCamNameComboBox">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>31</y>
-        <width>231</width>
-        <height>21</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="RUsername_lineEdit">
+     <widget class="QLineEdit" name="SPassword_lineEdit_3">
       <property name="geometry">
        <rect>
         <x>90</x>
-        <y>71</y>
+        <y>130</y>
         <width>271</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>guest</string>
+       <string>1234</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="RPassword_lineEdit">
+     <widget class="QLineEdit" name="SUsername_lineEdit_3">
       <property name="geometry">
        <rect>
         <x>90</x>
-        <y>101</y>
+        <y>100</y>
         <width>271</width>
         <height>20</height>
        </rect>
       </property>
       <property name="text">
-       <string>guest</string>
+       <string>new_guest</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_23">
+     <widget class="QLabel" name="label_13">
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>70</y>
+        <y>99</y>
         <width>51</width>
         <height>21</height>
        </rect>
@@ -370,11 +288,11 @@
        <string>Username</string>
       </property>
      </widget>
-     <widget class="QLabel" name="label_22">
+     <widget class="QLabel" name="label_14">
       <property name="geometry">
        <rect>
         <x>30</x>
-        <y>100</y>
+        <y>129</y>
         <width>51</width>
         <height>21</height>
        </rect>
@@ -383,17 +301,17 @@
        <string>Password</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="ShowCam_Button">
+     <widget class="QPushButton" name="delete_cam_Button_3">
       <property name="geometry">
        <rect>
-        <x>190</x>
-        <y>150</y>
-        <width>201</width>
+        <x>300</x>
+        <y>160</y>
+        <width>81</width>
         <height>31</height>
        </rect>
       </property>
       <property name="text">
-       <string>Show Camera</string>
+       <string>add user</string>
       </property>
      </widget>
     </widget>
@@ -421,6 +339,9 @@
      <string>Log</string>
     </property>
    </widget>
+   <zorder>LogtextBrowser</zorder>
+   <zorder>logLabel</zorder>
+   <zorder>tabWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

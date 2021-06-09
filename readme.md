@@ -1,18 +1,27 @@
 # TODO:
 
-*test the hardware limitation and distinct the network delay from Hardware delay with version 1
+
+
+* make server data durable (write camera name and related exchange +client user information  on file with encrypted pika)
+
+* define new user (on server application)
+
+* purge sender process to keep RAM steady
+
+* delete camera function
+
+-------===High_level====------
+
+* read and exploit "authentication" and "authorisation"  mechanism of RBMQ to control clients from the links blow:
+  * https://www.rabbitmq.com/access-control.html
 
 
 
-*use active exchange inside rabbit for get access exchange through other application.
+*implement and processing scenario! 
 
+-------------------------------
 
-
-*create authentication inside client + previewer for windowing
-
-*define new user (on server application)
-
-
+*test the hardware limitation and distinct the network delay effects --> then optimize it!
 
 # Next version
 
