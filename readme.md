@@ -1,14 +1,18 @@
 # TODO:
 
+---------------------------server app
 
-
-* make server data durable (write camera name and related exchange +client user information  on file with encrypted pika)
+* make server data durable (client user information  on file with encrypted pika)
 
 * define new user (on server application)
 
-* purge sender process to keep RAM steady
-
 * delete camera function
+
+  ----------------------client app
+
+* when logout in client application you should close the active process!
+
+* create refresh button for being update of client application
 
 -------===High_level====------
 
@@ -38,8 +42,6 @@ when the esp32-cam and RTSP servers get okayed- right now I cant export the port
 rewrite the sender with recording scenarios 
 
 ----------------------------------------------------------
-
-
 
 if some problem on fast framing arise :
 
