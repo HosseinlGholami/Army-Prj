@@ -5,21 +5,26 @@ from ServerUI import Ui_MainWindow
 class RunDesignerGUI():
     def __init__(self):
         self.Data=dict()
+        self.DmData=dict()
         app = QtWidgets.QApplication(sys.argv)
         self.MainWindow = QtWidgets.QMainWindow()
-
+        
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.MainWindow)
-
+        
         self.widget_action()
         self.update_widgets()
+        
+        self.send_log(str(self.Data))
+        self.send_log(str(self.DmData))
 
         self.MainWindow.show()
         sys.exit(app.exec_())
     #import related function 
-    from util import  add_camera,delete_camera,start_send_cam_data,stop_send_cam_data
+    from util import  add_camera,delete_camera,start_send_cam_data,stop_send_cam_data,restore_last_config
     
     def widget_action(self):
+        self.restore_last_config()
         self.ui.actionClose.setStatusTip("Exit the application")
         self.ui.actionClose.triggered.connect(self.close_GUI)
         #add camera

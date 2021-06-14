@@ -2,11 +2,11 @@
 
 ---------------------------server app
 
-* make server data durable (client user information  on file with encrypted pika)
+* delete camera function(delete exchange function)
 
 * define new user (on server application)
 
-* delete camera function
+* create login page for server and change the ui
 
   ----------------------client app
 
@@ -21,9 +21,7 @@
 
 
 
-*implement and processing scenario! 
-
--------------------------------
+---------------
 
 *test the hardware limitation and distinct the network delay effects --> then optimize it!
 
@@ -32,6 +30,14 @@
 **create processing layer between sender and receiver
 
 --------
+
+implement decoding and encoding for improve lagging
+
+-----------
+
+*implement and processing scenario! 
+
+-------------------------------
 
 **add camera sender inside docker in to the  add_camera function 
 

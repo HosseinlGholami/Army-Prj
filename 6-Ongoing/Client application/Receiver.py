@@ -17,7 +17,7 @@ EXCHANGE_NAME= sys.argv[3]
 # PASSWORD='guest'
 # EXCHANGE_NAME= 'c1'
 
-CREATION_TIME=time.ctime().split(' ')[4]
+CREATION_TIME=time.ctime()
 
 
 def decoding_time(x):
