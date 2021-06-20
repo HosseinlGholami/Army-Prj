@@ -71,42 +71,35 @@ def delete_exchange(host, port, user, passwd,exchange_name):
 #=============================================================================
 def stop_send_cam_data(self):
     exchange_name=self.ui.CamNameComboBox.currentText()
-    if exchange_name:
-        process=self.Data[exchange_name][1]
-        process.kill()
-        self.send_log('stop send data to server')
+    process=self.Data[exchange_name][1]
+    process.kill()
+    self.send_log('stop send data to server')
 
 def start_send_cam_data(self):
     exchange_name=self.ui.CamNameComboBox.currentText()
-    if exchange_name:
-        CAMERA_IP=self.Data[exchange_name][0]
-        process=self.Data[exchange_name][1]
-        print(CAMERA_IP)
-        print(type(CAMERA_IP))
-        
-        process.start("python",["Sender.py",exchange_name,CAMERA_IP])
-        self.send_log('start send data to server')
+    CAMERA_IP=self.Data[exchange_name][0]
+    process=self.Data[exchange_name][1]
+    process.start("python",["Sender.py",exchange_name,CAMERA_IP])
+    self.send_log('start send data to server')
 
 def delete_camera(self):
-    username=self.ui.SUsername_lineEdit.text()
-    password=self.ui.SPassword_lineEdit.text()
+    #check if some consumer is active on that exchange
     exchange_name=self.ui.CamNameComboBox.currentText()
-    if exchange_name:
-        resp=delete_exchange('localhost',15672,username,password,exchange_name)
-        if resp==True:
-            self.send_log('exchange has deleted')
-            self.ui.CamNameComboBox.removeItem(self.ui.CamNameComboBox.currentIndex())
-            del self.DmData[exchange_name]
-            del self.Data[exchange_name]
-            with open('server.dinf', 'wb') as handle:
-                pickle.dump(self.DmData, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    resp=delete_exchange('localhost',15672,'guest','guest',exchange_name)
+    if resp==True:
+        self.send_log('exchange has deleted')
+        self.ui.CamNameComboBox.removeItem(self.ui.CamNameComboBox.currentIndex())
+        del self.DmData[exchange_name]
+        del self.Data[exchange_name]
+        with open('server.dinf', 'wb') as handle:
+            pickle.dump(self.DmData, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
-        elif resp==False:
-            self.send_log('This exchange does not exist')
-        else:
-            self.send_log('This exchange person are bind to this exchange:')
-            for person in resp:
-                self.send_log(resp)
+    elif resp==False:
+        self.send_log('This exchange does not exist')
+    else:
+        self.send_log('This exchange person are bind to this exchange:')
+        for person in resp:
+            self.send_log(resp)
                     
 def add_camera(self):
     username=self.ui.SUsername_lineEdit.text()
@@ -115,55 +108,55 @@ def add_camera(self):
     serverport=15672
     cam_ip=self.ui.CIP_lineEdit.text()
     exchange_name=self.ui.SE_lineEdit.text()
+    flag=True
+    #check the camera
+    if cam_ip=='0':
+        cam_ip=0
     cap = cv.VideoCapture(cam_ip)
     if not cap.isOpened():
         self.send_log("the ip of cammera is invalid")
         flag =False
     else:
         self.send_log("camera is valid")
-    #free the memory
-    del cap
-    
-    if not exchange_name in self.Data:
-        #create an exchange
-        create_exchange(serverip,serverport,username,password,exchange_name)        
-        #save every things on data 
-        self.Data.update({exchange_name:[cam_ip, QProcess()]})
-        #save every things on dummy data for make data persistance
-        self.DmData.update({exchange_name:[str(cam_ip),"0"]})
-        with open('server.dinf', 'wb') as handle:
-            pickle.dump(self.DmData, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        self.ui.CamNameComboBox.addItem(exchange_name)
-        self.send_log("Camera added inside server")
-        self.send_log("----------------------------------")
-    else:
-        self.send_log("This exchange already exist!")
-    
-def login(self):
-    username=self.ui.SUsername_lineEdit.text()
-    password=self.ui.SPassword_lineEdit.text()
-    serverip='localhost'
-    serverport=15672
-
     #check authoriation
     try:
-        rabbit_authorization=call_rabbitmq_api_validation(serverip,serverport,username,password)
+        rabbit_authoriation=call_rabbitmq_api_validation(serverip,serverport,username,password)
     except:
         self.send_log("rabbit is offline")
-        rabbit_authorization={'error':'offline'}
+        rabbit_authoriation={'error':'offline'}
     
-    if 'name' in rabbit_authorization:
-        #the authori
-        self.restore_last_config(username,password)
-        self.ui.tabWidget.setTabVisible(0,False)
-        for i in range(1,4):
-            self.ui.tabWidget.setTabVisible(i,True)
+    if 'name' in rabbit_authoriation:
         self.send_log("connection to server is ok")
     else:
-        self.send_log(f"rabbit_authorization failed: error --> {rabbit_authorization['error']}")
-    del rabbit_authorization
+        flag=False
+        self.send_log(f"rabbit_authoriation failed: error --> {rabbit_authoriation['error']}")
+    #free the memory
+    del cap
+    del rabbit_authoriation    
+    
+    if flag: #if authentication and camera ok
+        if not exchange_name in self.Data:
+            #create an exchange
+            create_exchange(serverip,serverport,username,password,exchange_name)        
+            #save every things on data 
+            self.Data.update({exchange_name:[cam_ip, QProcess()]})
+            #save every things on dummy data for make data persistance
+            self.DmData.update({exchange_name:[str(cam_ip),0]})
+            with open('server.dinf', 'wb') as handle:
+                pickle.dump(self.DmData, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            self.ui.CamNameComboBox.addItem(exchange_name)
+            self.send_log("Exchange added inside server")
+            self.send_log("----------------------------------")
+            self.send_log("Camera added inside server")
+            self.send_log("----------------------------------")
+        else:
+            self.send_log("This exchange already exist!")
+    else:
+        self.send_log("×××××××××××××××××××××××××××××××××××")
+        self.send_log("Camera cant add inside server!")
+        self.send_log("×××××××××××××××××××××××××××××××××××")
 
-def restore_last_config(self,username,password):
+def restore_last_config(self):
     with open('server.dinf', 'rb') as handle:
         readfile_list = pickle.load(handle)
     for exchange_name in readfile_list:
@@ -174,4 +167,4 @@ def restore_last_config(self,username,password):
               [readfile_list[exchange_name][0],0]
               })
         self.ui.CamNameComboBox.addItem(exchange_name)
-        create_exchange('localhost',15672,username,password,exchange_name)
+        create_exchange('localhost',15672,'guest','guest',exchange_name)

@@ -2,11 +2,12 @@
 
 ---------------------------server app
 
-* delete camera function(delete exchange function)
+* coding and decoding on client and server application--> https://www.dacast.com/blog/video-streaming-protocol/
+
+  H264 would be used!
+
 
 * define new user (on server application)
-
-* create login page for server and change the ui
 
   ----------------------client app
 
@@ -16,7 +17,7 @@
 
 -------===High_level====------
 
-* read and exploit "authentication" and "authorisation"  mechanism of RBMQ to control clients from the links blow:
+* read and exploit "Authentication" and "Authorization"  mechanism of RBMQ to control clients from the links blow:
   * https://www.rabbitmq.com/access-control.html
 
 
@@ -28,10 +29,6 @@
 # Next version
 
 **create processing layer between sender and receiver
-
---------
-
-implement decoding and encoding for improve lagging
 
 -----------
 
@@ -51,4 +48,4 @@ rewrite the sender with recording scenarios
 
 if some problem on fast framing arise :
 
-​		 buffering frames inside the client application
+​		 buffering frames inside the client application 
