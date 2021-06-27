@@ -3,8 +3,7 @@ import numpy as np
 
 def scale(img,coefficient):
     height, width, _ = img.shape
-    return cv.resize(img,(int(coefficient*width), int(coefficient*height)),
-                    interpolation=cv.INTER_AREA)
+    return cv.resize(img,(int(coefficient*width), int(coefficient*height)),interpolation=cv.INTER_AREA)
 
 def change_position_to(img,x,y):
     M = np.float32([

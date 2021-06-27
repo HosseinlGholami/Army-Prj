@@ -2,11 +2,11 @@ from time import time
 import cv2 as cv
 import pickle
 
-cap = cv.VideoCapture('rtsp://192.168.1.4:12525/h264_ulaw.sdp')
+cap = cv.VideoCapture(0)#rtsp://192.168.1.4:12525/h264_ulaw.sdp')
 
 # Define the codec and create VideoWriter object
 
-Desiger_FPS=20.0
+Desiger_FPS=30.0
 fourcc = cv.VideoWriter_fourcc(*'XVID')
 out = cv.VideoWriter('output.avi', fourcc, Desiger_FPS , (640,  480))
 
@@ -49,6 +49,6 @@ cv.destroyAllWindows()
 #analyses
 sampel_under_mean_time =[(x[1],i) for i,x in enumerate(every_frame) if x[1]<0.03 ]
 for i in [x[1] for x in sampel_under_mean_time]:
-    cv.imshow("mamad",every_frame[83][0])
+    cv.imshow("A",every_frame[83][0])
     cv.waitKey(1000)
-    cv.destroyWindow('mamad')
+    cv.destroyWindow('A')

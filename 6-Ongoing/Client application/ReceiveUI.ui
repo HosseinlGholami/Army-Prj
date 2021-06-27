@@ -116,17 +116,7 @@
      <string>File</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuRed_filter">
-    <property name="title">
-     <string>Filter</string>
-    </property>
-    <addaction name="actionBlur_Filter"/>
-    <addaction name="actionRed_Filter"/>
-    <addaction name="actionGreen_Filter"/>
-    <addaction name="actionBlue_Filter"/>
-   </widget>
    <addaction name="menuexit"/>
-   <addaction name="menuRed_filter"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionblur_filter">

@@ -81,9 +81,6 @@ def start_send_cam_data(self):
     if exchange_name:
         CAMERA_IP=self.Data[exchange_name][0]
         process=self.Data[exchange_name][1]
-        print(CAMERA_IP)
-        print(type(CAMERA_IP))
-        
         process.start("python",["Sender.py",exchange_name,CAMERA_IP])
         self.send_log('start send data to server')
 
