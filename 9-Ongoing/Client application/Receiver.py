@@ -9,13 +9,13 @@ import pika
 import numpy as np
 import time 
 
-USERNAME=sys.argv[1]
-PASSWORD=sys.argv[2]
-EXCHANGE_NAME= sys.argv[3]
+# USERNAME=sys.argv[1]
+# PASSWORD=sys.argv[2]
+# EXCHANGE_NAME= sys.argv[3]
 
-# USERNAME='guest'
-# PASSWORD='guest'
-# EXCHANGE_NAME= 'c1'
+USERNAME='guest'
+PASSWORD='guest'
+EXCHANGE_NAME= 'e.R'
 
 CREATION_TIME=time.ctime()
 
@@ -42,7 +42,7 @@ class Rbmq(QThread):
         result=self.channel.queue_declare(queue=USERNAME+'-'+EXCHANGE_NAME+'-'+CREATION_TIME, durable=False, exclusive=True)
         queue_name = result.method.queue
         self.channel.queue_bind(exchange=EXCHANGE_NAME,
-                       queue=queue_name)
+                       queue=queue_name,routing_key='')
         self.channel.basic_consume(queue=queue_name,
                       on_message_callback=
                       lambda ch, method, properties, body:

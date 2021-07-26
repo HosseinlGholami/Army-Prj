@@ -1,5 +1,9 @@
 # TODO:
 
+cv.VideoCapture(index, apiPreference) 
+
+use apiPreference for dont decode the frame ---> should be deep on it!
+
 ---------------------------server app
 
 * coding and decoding on client and server application--> https://www.dacast.com/blog/video-streaming-protocol/
@@ -20,7 +24,9 @@
 * read and exploit "Authentication" and "Authorization"  mechanism of RBMQ to control clients from the links blow:
   * https://www.rabbitmq.com/access-control.html
 
+برنامه دریافت کننده اطلاعات باید بررسی کند در صورتی که اطلاعات به سرور میومد اون اکس چنج رو نمایش بده!
 
+در برنامه سمت سرور یه دونه qprocess بیشتر نمیخایم
 
 ---------------
 

@@ -6,9 +6,9 @@ cap = cv.VideoCapture(0)#rtsp://192.168.1.4:12525/h264_ulaw.sdp')
 
 # Define the codec and create VideoWriter object
 
-Desiger_FPS=30.0
-fourcc = cv.VideoWriter_fourcc(*'XVID')
-out = cv.VideoWriter('output.avi', fourcc, Desiger_FPS , (640,  480))
+# Desiger_FPS=30.0
+# fourcc = cv.VideoWriter_fourcc(*'XVID')
+# out = cv.VideoWriter('output.avi', fourcc, Desiger_FPS , (640,  480))
 
 every_frame=list()
 
@@ -26,23 +26,22 @@ while True:
         print("Can't receive frame (stream end?). Exiting ...")
         break    
     
-    # Our operations on the frame come here
-    Lable=time()-period
-    period=time()
-    cv.putText(frame,f"{Lable:.2f}" , (90, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
-    every_frame.append((frame,Lable))
+    # # Our operations on the frame come here
+    # Lable=time()-period
+    # period=time()
+    # cv.putText(frame,f"{Lable:.2f}" , (90, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2)
+    # every_frame.append((frame,Lable))
     
     
     # Display the resulting frame
     cv.imshow('frame', frame)
     
     # Write file and check quit!
-    out.write(frame)
+    # out.write(frame)
     if cv.waitKey(1) == ord('q'):
         break
 
 cap.release()
-out.release()
 cv.destroyAllWindows()
 
 
