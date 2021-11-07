@@ -15,7 +15,8 @@ import time
 
 USERNAME='guest'
 PASSWORD='guest'
-EXCHANGE_NAME= 'e.R'
+EXCHANGE_NAME= 'c1'
+VHOST='l1'
 
 CREATION_TIME=time.ctime()
 
@@ -36,21 +37,21 @@ class Rbmq(QThread):
         self.channel = Channel
         #=============================================================
         #set perefetch
-        #self.channel.basic_qos(prefetch_count=10)
+        self.channel.basic_qos(prefetch_count=1)
         #=============================================================
         
-        result=self.channel.queue_declare(queue=USERNAME+'-'+EXCHANGE_NAME+'-'+CREATION_TIME, durable=False, exclusive=True)
-        queue_name = result.method.queue
-        self.channel.queue_bind(exchange=EXCHANGE_NAME,
-                       queue=queue_name,routing_key='')
-        self.channel.basic_consume(queue=queue_name,
+        # result=self.channel.queue_declare(queue=USERNAME+'-'+EXCHANGE_NAME+'-'+CREATION_TIME, durable=False, exclusive=True)
+        # queue_name = result.method.queue
+        # self.channel.queue_bind(exchange=EXCHANGE_NAME,
+        #                queue=queue_name,routing_key='')
+        self.channel.basic_consume(queue='cq1',
                       on_message_callback=
                       lambda ch, method, properties, body:
                           self.dispatch(
                               ch, method, properties, body,self.signal
                               ),
                           consumer_tag="ct_test",
-                        #   auto_ack=True
+                          auto_ack=False
                         )
         print('Waiting for message')
     def run(self):
@@ -81,7 +82,7 @@ class RunDesignerGUI():
         self.credentials = pika.PlainCredentials(USERNAME, PASSWORD)
         self.parameters  = pika.ConnectionParameters('localhost',
                                        5672,
-                                        '/',
+                                        VHOST,
                                         self.credentials)
         self.connection=pika.BlockingConnection(self.parameters)
         self.channel=self.connection.channel()

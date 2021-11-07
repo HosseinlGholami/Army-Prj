@@ -4,11 +4,13 @@ import pika
 import sys
 import numpy as np
 
-EXCHANGE_NAME = sys.argv[1]
-CAM_IP = sys.argv[2]
+# EXCHANGE_NAME = sys.argv[1]
+# CAM_IP = sys.argv[2]
 
-# EXCHANGE_NAME = 'c1'
-# CAM_IP=0
+EXCHANGE_NAME = 'c1'
+CAM_IP=0
+VHOST='base'
+
 
 if CAM_IP =='0':
     CAM_IP=0
@@ -30,7 +32,7 @@ cap = cv.VideoCapture(CAM_IP)#'rtsp://192.168.1.4:12525/h264_ulaw.sdp')
 credentials = pika.PlainCredentials('guest', 'guest')
 parameters = pika.ConnectionParameters('localhost',
                                        5672,
-                                        '/',
+                                        VHOST,
                                         credentials)
 channel=pika.BlockingConnection(parameters).channel()
 
