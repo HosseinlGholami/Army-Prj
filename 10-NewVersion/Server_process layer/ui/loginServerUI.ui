@@ -100,7 +100,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="Username_lineEdit">
+   <widget class="QLineEdit" name="Server_User_lineEdit">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -113,7 +113,7 @@
      <string>guest</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="Password_lineEdit">
+   <widget class="QLineEdit" name="Server_Pass_lineEdit">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -152,7 +152,7 @@
      <string>Server address</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="Username_lineEdit_2">
+   <widget class="QLineEdit" name="Server_addr_lineEdit">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -178,7 +178,7 @@
      <string>Server port</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="Username_lineEdit_3">
+   <widget class="QLineEdit" name="Server_port_lineEdit">
     <property name="geometry">
      <rect>
       <x>90</x>

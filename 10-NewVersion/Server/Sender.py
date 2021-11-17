@@ -41,7 +41,7 @@ class file_recorder(Thread):
             os.mkdir(RECORD_PATH)
         while(True):
             frame=self.queue.get(block=True)
-            
+            #TODO; OUT HAS ERROR!
             if one_min_counter==0:
                 if s_flag:
                     out.release()

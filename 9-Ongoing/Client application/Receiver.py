@@ -40,10 +40,10 @@ class Rbmq(QThread):
         self.channel.basic_qos(prefetch_count=1)
         #=============================================================
         
-        # result=self.channel.queue_declare(queue=USERNAME+'-'+EXCHANGE_NAME+'-'+CREATION_TIME, durable=False, exclusive=True)
-        # queue_name = result.method.queue
-        # self.channel.queue_bind(exchange=EXCHANGE_NAME,
-        #                queue=queue_name,routing_key='')
+        result=self.channel.queue_declare(queue=USERNAME+'-'+EXCHANGE_NAME+'-'+CREATION_TIME, durable=False, exclusive=True)
+        queue_name = result.method.queue
+        self.channel.queue_bind(exchange=EXCHANGE_NAME,
+                        queue=queue_name,routing_key='')
         self.channel.basic_consume(queue='cq1',
                       on_message_callback=
                       lambda ch, method, properties, body:

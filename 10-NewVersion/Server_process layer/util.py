@@ -17,7 +17,7 @@ def get_active_exchange(user,passwd,host,port):
     return [ex['name'] for ex in dict(r.json())['exchanges']]
 #=================
 def call_rabbitmq_api_validation(host, port, user, passwd):
-  url = 'http://%s:%s/api/whoami' % (host, port)
+  url = f"http://{host}:1{port}/api/whoami"
   r = requests.get(url, auth=(user,passwd))
   return dict(r.json())
 #================

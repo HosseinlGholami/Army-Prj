@@ -63,9 +63,9 @@
      <widget class="QPushButton" name="addc_Button">
       <property name="geometry">
        <rect>
-        <x>200</x>
+        <x>220</x>
         <y>130</y>
-        <width>201</width>
+        <width>181</width>
         <height>31</height>
        </rect>
       </property>
@@ -86,7 +86,7 @@
        <string>Camera Selection</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="SE_lineEdit">
+     <widget class="QLineEdit" name="processor_lyr_lineEdit">
       <property name="geometry">
        <rect>
         <x>110</x>
@@ -112,7 +112,7 @@
        <string>Processor Name</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="CamNameComboBox_3">
+     <widget class="QComboBox" name="lvl_ComboBox">
       <property name="geometry">
        <rect>
         <x>110</x>
@@ -155,7 +155,7 @@
        <string>Level of Access</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="CamNameComboBox_4">
+     <widget class="QComboBox" name="CamNameComboBox">
       <property name="geometry">
        <rect>
         <x>110</x>
@@ -163,6 +163,19 @@
         <width>261</width>
         <height>21</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="Refresh_Button">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>130</y>
+        <width>181</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Refresh</string>
       </property>
      </widget>
     </widget>
@@ -199,7 +212,7 @@
        <string>Algorithm Selection</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="CamNameComboBox">
+     <widget class="QComboBox" name="AlgComboBox">
       <property name="geometry">
        <rect>
         <x>120</x>
@@ -254,7 +267,7 @@
        <string/>
       </property>
      </widget>
-     <widget class="QComboBox" name="CamNameComboBox_2">
+     <widget class="QComboBox" name="Kill_processComboBox">
       <property name="geometry">
        <rect>
         <x>120</x>
