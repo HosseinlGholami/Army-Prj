@@ -7,6 +7,7 @@ import time
 import sys
 import os
 import  requests
+from minio import Minio
 
 ALGORITHM=sys.argv[1]
 INPUT_EXCHANGE_NAME = sys.argv[2]
@@ -15,9 +16,10 @@ SERVER_USERNAME=sys.argv[4]
 SERVER_PASSWORD=sys.argv[5]
 SERVER_IP=sys.argv[6]
 SERVER_PORT=int(sys.argv[7])
-SERVER_VHOST=sys.argv[8]
-FRAME_HOP=int(sys.argv[9])
-# RECORD_PATH=sys.argv[10]
+FRAME_HOP=int(sys.argv[8])
+MINIO_USER_FROM_DOCKER_FILE=sys.argv[9]
+MINIO_PASS_FROM_DOCKER_FILE=sys.argv[10]
+MINIO_SERVER=sys.argv[11]
 
 # ALGORITHM='face'
 # INPUT_EXCHANGE_NAME = 'ex_c1'
@@ -26,9 +28,16 @@ FRAME_HOP=int(sys.argv[9])
 # SERVER_PASSWORD='guest'
 # SERVER_IP='localhost'
 # SERVER_PORT=5672
-# SERVER_VHOST='/'
+
 # FRAME_HOP=30
-RECORD_PATH=f"""..\Data\jangal_{INPUT_EXCHANGE_NAME}"""
+# MINIO_USER_FROM_DOCKER_FILE='admin'
+# MINIO_PASS_FROM_DOCKER_FILE='admin1234'
+# MINIO_SERVER='localhost:9000'
+
+
+SERVER_VHOST='/'
+ELEMENT_NUMBER_FOR_SAVE=30
+cache_path=".\cache"
 
 if ALGORITHM =='face':
     from model.face.object_detection import get_object_position 
@@ -54,6 +63,40 @@ def create_exchange(host,port,user,passwd,exchange_name):
         return False
     except :
         return True
+    
+class apply_save_procces(Thread):
+    def __init__(self,file_dump_queue):
+        Thread.__init__(self)
+        self.minioClient = Minio(MINIO_SERVER,
+                                 access_key=MINIO_USER_FROM_DOCKER_FILE,
+                                 secret_key=MINIO_PASS_FROM_DOCKER_FILE,
+                                 secure=False)
+        self.queue=file_dump_queue
+    def run(self):
+        buckets = self.minioClient.list_buckets()
+        minio_buckets=[bucket.name.split('jangal_')[1] for bucket in buckets]
+        if INPUT_EXCHANGE_NAME in minio_buckets:
+            bucket_index=minio_buckets.index(INPUT_EXCHANGE_NAME)
+            objects = self.minioClient.list_objects(buckets[bucket_index].name, 
+                                          recursive=True)
+            minio_objects=[obj.object_name for obj in objects]
+            if f"{INPUT_EXCHANGE_NAME}.{ALGORITHM}.txt" in minio_objects:
+                file = self.minioClient.get_object(buckets[bucket_index].name, f"{INPUT_EXCHANGE_NAME}.{ALGORITHM}.txt")
+                with open(cache_path+f"\{INPUT_EXCHANGE_NAME}.{ALGORITHM}.txt", 'wb') as file_data:
+                    for d in file.stream(32*1024):
+                        file_data.write(d)
+        save_counter=0
+        while(True):
+            object_position=self.queue.get(block=True)
+            if save_counter<ELEMENT_NUMBER_FOR_SAVE:
+                with open(cache_path+f"\{INPUT_EXCHANGE_NAME}.{ALGORITHM}.txt", "a") as myfile:
+                    myfile.write(f"""{time.time()}*{str(object_position)}\r\n""")
+                save_counter+=1
+            else:
+                save_counter=0
+                print("write")
+                self.minioClient.fput_object(
+                    bucket_name='jangal_'+INPUT_EXCHANGE_NAME , object_name=f"{INPUT_EXCHANGE_NAME}.{ALGORITHM}.txt", file_path=cache_path+f"\{INPUT_EXCHANGE_NAME}.{ALGORITHM}.txt")    
 
 class apply_procces(Thread):
     def __init__(self,reciever_queue):
@@ -66,6 +109,9 @@ class apply_procces(Thread):
                                                 credentials)
         self.channel=pika.BlockingConnection(parameters).channel()
     def run(self):
+        file_dump_queue=Queue()
+        file_dump_thread=apply_save_procces(file_dump_queue)
+        file_dump_thread.start()
         while(True):
             frame=self.queue.get(block=True)
             object_position=get_object_position(frame,'./model/'+ALGORITHM+'/')
@@ -77,8 +123,7 @@ class apply_procces(Thread):
                         body=np.array(object_position).tobytes(),
                         properties=pika.BasicProperties(delivery_mode = 1)
                         )
-                with open(RECORD_PATH+f"\\{ALGORITHM}.txt", "a") as myfile:
-                    myfile.write(f"""{time.time()}*{str(object_position)}\r\n""")
+                file_dump_queue.put(object_position)
             else:
                 # send by rabbitmq        
                 self.channel.basic_publish(
@@ -110,7 +155,7 @@ def main():
                                             credentials)
     channel=pika.BlockingConnection(parameters).channel()
     channel.basic_qos(prefetch_count=5)
-    result=channel.queue_declare(queue='pr_'+INPUT_EXCHANGE_NAME, durable=False, exclusive=True)
+    result=channel.queue_declare(queue='pr_'+INPUT_EXCHANGE_NAME, durable=False, exclusive=False)
     queue_name = result.method.queue
     channel.queue_bind(exchange=INPUT_EXCHANGE_NAME,
                     queue=queue_name,routing_key='')

@@ -14,7 +14,7 @@ from PyQt5.QtCore import Qt
 
 from ui.loginServerUI import Ui_MainWindow as loginServerUI_MainWindow
 from ui.ServerUI import Ui_MainWindow  as ServerUI_MainWindow
-from util import  call_rabbitmq_api_validation, create_exchange
+from util import  call_rabbitmq_api_validation, create_exchange,delete_exchange
 
 RABBIT_PORT=15672
 RABBIT_SERVER_IP='localhost'
@@ -78,10 +78,9 @@ class RunDesignerGUI():
         username=self.ui.usr_Username_lineEdit.text()
         password=self.ui.usr_Password_lineEdit.text()
         access_level=self.ui.lvl_usr_ComboBox.currentText()
-        self.Redis_client.hset('USR_'+username, "pass", password)
-        self.Redis_client.hset('USR_'+username, "lvl" , access_level)
-        Redis_client.acl_setuser(username, enabled=True, nopass=False, passwords="+"+password,
-                                   commands=["+HGETALL","+ACL"],categories=['+@hash'],
+        self.Redis_client.hset('USR_REDIS_ACL', username , access_level)
+        self.Redis_client.acl_setuser(username, enabled=True, nopass=False, passwords="+"+password,
+                                   commands=["+HGETALL","+ACL","+SCAN"],categories=['+@hash'],
                                    keys=["*"])
         self.send_log('user added successfully')
             
@@ -127,7 +126,12 @@ class RunDesignerGUI():
                 p.terminate()
             self.Redis_client.delete(cam_name)
             del self.cam_handel[cam_name]
-            #TODO: remove exchange
+            
+            # #TODO: this might be a littel tricky if some one is one the queue!
+            # #needs more attention!
+            # res=delete_exchange(RABBIT_SERVER_IP,RABBIT_PORT,self.username,self.password,RABBIT_EXCHANGE_HANDEL+cam_name)
+            # print(res)
+            
             _index = self.ui.CamNameComboBox.findText(cam_name)
             self.ui.CamNameComboBox.removeItem(_index)
             self.send_log('camera has removed from server but the stored data sill avail')

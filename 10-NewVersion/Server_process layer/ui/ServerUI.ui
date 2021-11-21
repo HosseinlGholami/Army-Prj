@@ -70,7 +70,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Add camera</string>
+       <string>Add Process</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_5">
@@ -186,8 +186,8 @@
      <widget class="QPushButton" name="StrSenButton">
       <property name="geometry">
        <rect>
-        <x>90</x>
-        <y>90</y>
+        <x>20</x>
+        <y>140</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -196,14 +196,14 @@
        <string>it will activate the camera to send data to clients and store it for future access.</string>
       </property>
       <property name="text">
-       <string>Activate Algorithm</string>
+       <string>Activate Process</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>30</y>
+        <x>30</x>
+        <y>80</y>
         <width>91</width>
         <height>21</height>
        </rect>
@@ -215,9 +215,9 @@
      <widget class="QComboBox" name="AlgComboBox">
       <property name="geometry">
        <rect>
-        <x>120</x>
-        <y>30</y>
-        <width>231</width>
+        <x>130</x>
+        <y>80</y>
+        <width>261</width>
         <height>21</height>
        </rect>
       </property>
@@ -225,8 +225,8 @@
      <widget class="QPushButton" name="StpSenButton">
       <property name="geometry">
        <rect>
-        <x>210</x>
-        <y>90</y>
+        <x>150</x>
+        <y>140</y>
         <width>111</width>
         <height>31</height>
        </rect>
@@ -235,23 +235,7 @@
        <string>it will deactivate the camera but still exist and could be activated again.</string>
       </property>
       <property name="text">
-       <string>Deactivate Algorithm</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="delete_store_cam_Button">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>180</y>
-        <width>101</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="statusTip">
-       <string>it will remove the data stored inside the server.</string>
-      </property>
-      <property name="text">
-       <string>delete stored data</string>
+       <string>Deactivate Process</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -267,45 +251,6 @@
        <string/>
       </property>
      </widget>
-     <widget class="QComboBox" name="Kill_processComboBox">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>150</y>
-        <width>231</width>
-        <height>21</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="Line" name="line">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>130</y>
-        <width>281</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_6">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>130</y>
-        <width>81</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Storage control</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_7">
       <property name="enabled">
        <bool>false</bool>
@@ -313,7 +258,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
+        <y>60</y>
         <width>81</width>
         <height>21</height>
        </rect>
@@ -326,8 +271,8 @@
       <property name="geometry">
        <rect>
         <x>90</x>
-        <y>10</y>
-        <width>291</width>
+        <y>60</y>
+        <width>301</width>
         <height>20</height>
        </rect>
       </property>
@@ -335,25 +280,12 @@
        <enum>Qt::Horizontal</enum>
       </property>
      </widget>
-     <widget class="QLabel" name="label_9">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>150</y>
-        <width>81</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Processor Name</string>
-      </property>
-     </widget>
      <widget class="QSpinBox" name="process_spinBox">
       <property name="geometry">
        <rect>
-        <x>130</x>
-        <y>60</y>
-        <width>61</width>
+        <x>140</x>
+        <y>110</y>
+        <width>71</width>
         <height>22</height>
        </rect>
       </property>
@@ -361,14 +293,14 @@
        <number>255</number>
       </property>
       <property name="value">
-       <number>45</number>
+       <number>60</number>
       </property>
      </widget>
      <widget class="QLabel" name="label_10">
       <property name="geometry">
        <rect>
-        <x>20</x>
-        <y>60</y>
+        <x>30</x>
+        <y>110</y>
         <width>91</width>
         <height>21</height>
        </rect>
@@ -377,20 +309,72 @@
        <string>frame Hop</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="StpSenButton_2">
+     <widget class="QLabel" name="label_9">
       <property name="geometry">
        <rect>
-        <x>220</x>
-        <y>60</y>
+        <x>30</x>
+        <y>30</y>
+        <width>81</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Processor Name</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="SelectprocessComboBox">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>30</y>
+        <width>261</width>
+        <height>21</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="Line" name="line_3">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>10</y>
+        <width>281</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
         <width>91</width>
         <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Process Selection</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="delSenButton">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>140</y>
+        <width>111</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="statusTip">
        <string>it will deactivate the camera but still exist and could be activated again.</string>
       </property>
       <property name="text">
-       <string>update</string>
+       <string>Delete Process</string>
       </property>
      </widget>
     </widget>
