@@ -8,6 +8,7 @@ import sys
 import os
 import  requests
 from minio import Minio
+import json
 
 ALGORITHM=sys.argv[1]
 INPUT_EXCHANGE_NAME = sys.argv[2]
@@ -115,21 +116,27 @@ class apply_procces(Thread):
         while(True):
             frame=self.queue.get(block=True)
             object_position=get_object_position(frame,'./model/'+ALGORITHM+'/')
+            
+            
             if object_position:
-                # send by rabbitmq        
+                object_dict={'av':True,'dt':object_position}
+                object_byte=json.dumps(object_dict)
+                # send by rabbitmq   
                 self.channel.basic_publish(
                         exchange=OUTPUT_EXCHANGE_NAME,
                         routing_key='',
-                        body=np.array(object_position).tobytes(),
+                        body=object_byte,
                         properties=pika.BasicProperties(delivery_mode = 1)
                         )
                 file_dump_queue.put(object_position)
             else:
+                object_dict={'av':False}
+                object_byte=json.dumps(object_dict)
                 # send by rabbitmq        
                 self.channel.basic_publish(
                         exchange=OUTPUT_EXCHANGE_NAME,
                         routing_key='',
-                        body="NULL".encode(),
+                        body=object_byte,
                         properties=pika.BasicProperties(delivery_mode = 1)
                         )
                 

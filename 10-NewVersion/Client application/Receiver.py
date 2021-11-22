@@ -67,7 +67,10 @@ class Rbmq(QThread):
         self.channel = Channel
         self.channel.basic_qos(prefetch_count=1)
         self.exchange=exchange_name
-        result=self.channel.queue_declare(queue=queue_name, durable=False, exclusive=False)
+        self.channel.queue_declare(queue=queue_name, durable=False,
+                                          exclusive=False,auto_delete=True)
+                                          # arguments={"x-max-length":30,
+                                          #            })
         self.channel.queue_bind(exchange=self.exchange,
                         queue=queue_name,routing_key='')
         
@@ -84,7 +87,8 @@ class Rbmq(QThread):
         
 class RunDesignerGUI():
     def __init__(self):
-        processor_handel=dict()
+        self.processor_handel=dict()
+        self.active_processor_flag=False
         app = QtWidgets.QApplication(sys.argv)
         self.MainWindow = QtWidgets.QMainWindow()
         
@@ -102,17 +106,30 @@ class RunDesignerGUI():
         self.ui.Refresh_Button.clicked.connect(self.refresh)
     
     def active_process(self):
-        # self.frame_rbmq_thread.setTerminationEnabled()
-        # self.frame_rbmq_thread.terminate()
-        # self.frame_rbmq_thread=Rbmq(self.frame_Signal.change_pixmap_signal,
-        #                             self.frame_channel,
-        #                             INPUT_EXCAHNGE,
-        #                             self.dispatch_frame)
-        
-        pass
+        process_name=self.ui.ModelComboBox.currentText()
+        self.metadata_queue_name='pr_'+str(time.time())
+        if process_name!=None:
+            self.active_processor_flag=True
+            self.metadata_rbmq_thread=Rbmq(self.metadata_Signal.change_pixmap_signal,
+                                        self.metadata_channel,
+                                        self.processor_handel[process_name]["ex"],
+                                        self.metadata_queue_name,
+                                        self.dispatch_metadata)
+            
+            self.metadata_rbmq_thread.setTerminationEnabled()
+            self.metadata_rbmq_thread.start()
+        else:
+            if self.active_processor_flag==True:
+                self.metadata_rbmq_thread.terminate()
     
     def dispatch_metadata(self, channel, method, properties, body,Signal):
-        pass
+        print("data recieved")
+        recieved_data=json.loads(body)
+        print(recieved_data)
+        if recieved_data['av']:
+            print(recieved_data['dt'])
+        
+        Signal.emit(np.array([0,0,0,0]))
     
     def refresh(self):
         models=self.Redis_client.hget(CAM_NAME,b"alg")
@@ -124,13 +141,13 @@ class RunDesignerGUI():
                                               "ac":content[1],
                                               "lv":content[2],
                                               }
-                if content[1]=='T':
-                    if content[2]>=USER_ACCESS_LEVEL:
+                if self.processor_handel[alg]["ac"]=='T':
+                    if self.processor_handel[alg]["lv"]>=USER_ACCESS_LEVEL:
                         self.ui.ModelComboBox.addItem(alg)
         #add none for disable showing process
-        _index = self.ui.ModelComboBox.findText("NONE")
+        _index = self.ui.ModelComboBox.findText("None")
         if _index ==-1:
-            self.ui.ModelComboBox.addItem("NONE")
+            self.ui.ModelComboBox.addItem("None")
 
     def control_server_and_signals(self):
         self.Redis_client = redis.Redis(host=SERVER_ADDRESS, port=REDIS_PORT,
@@ -141,10 +158,11 @@ class RunDesignerGUI():
                                         RABBIT_PORT,
                                         RABBIT_VHOST,
                                         self.credentials)
-        self.connection=pika.BlockingConnection(self.parameters)
+        self.connection1=pika.BlockingConnection(self.parameters)
+        self.connection2=pika.BlockingConnection(self.parameters)
         #client channels
-        self.frame_channel=self.connection.channel()
-        self.metadata_channel=self.connection.channel()
+        self.frame_channel=self.connection1.channel()
+        self.metadata_channel=self.connection2.channel()
         #client signals
             #frame signals
         self.frame_Signal=frame_Signals()
@@ -161,9 +179,10 @@ class RunDesignerGUI():
                                     self.frame_queue_name,
                                     self.dispatch_frame)
         
-        # # start reading rabbit packet
+        # start reading rabbit packet
         self.frame_rbmq_thread.start()
-        
+        #reffresh the item
+        self.refresh()
     
     def dispatch_frame(self, channel, method, properties, body,signal):
         frames=np.frombuffer(body,dtype=np.dtype('uint8'))
@@ -173,28 +192,35 @@ class RunDesignerGUI():
     def closeEvent(self, event):
         self.channel.stop_consuming()
         self.connection.close()
-        delete_queue(SERVER_ADDRESS,RABBIT_PORT,RABBIT_USER,RABBIT_PASS,self.frame_queue_name)
-        event.accept()
-        
-    
-    def change_process_flage(self):
-        pass
-    
+        # delete_queue(SERVER_ADDRESS,RABBIT_PORT,RABBIT_USER,RABBIT_PASS,self.frame_queue_name)
+        # event.accept()
+            
     def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
         qt_img = self.convert_cv_qt(cv_img)
         self.ui.image_label.setPixmap(qt_img)
         
-        
     def convert_cv_qt(self, cv_img):
         """Convert from an opencv image to QPixmap"""
         rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
-    
+        #add processor metadata to frames
+        rgb_image=self.draw_object_posion_on_frames(rgb_image)
+        
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
         p = convert_to_Qt_format.scaled(self.ui.image_label.width(), self.ui.image_label.height(), Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
     
+    def draw_object_posion_on_frames(self,cv_image):
+        for a,b,c,d in self.position:
+            cv2.rectangle(cv_image, (a, b), (c, d), (100, 100, 100), 3)
+        return cv_image
+    def change_process_flage(self,meta_data):
+        self.position=[(472,138,609,275),(500,140,650,200)]
+        print("recieved_meta_data inside ui")
+        pass
+    
+
 if __name__ == "__main__":
     RunDesignerGUI()
