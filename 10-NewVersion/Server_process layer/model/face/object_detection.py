@@ -10,7 +10,7 @@ def get_object_position(frame,loc):
     faces = face_cascade.detectMultiScale(gray, 1.1, 4)    
     face_list=list()
     for x,y,w,h in faces:
-        face_list.append((x,y,x+w,y+h))
+        face_list.append((int(x),int(y),int(x+w),int(y+h)))
     return face_list
 
 def test_face_detection(loc):

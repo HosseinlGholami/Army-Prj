@@ -82,16 +82,34 @@
           <widget class="QListWidget" name="ServerListWidget"/>
          </item>
          <item>
-          <widget class="QPushButton" name="download_Button">
+          <widget class="QPushButton" name="add_jobButton">
            <property name="text">
-            <string>download</string>
+            <string>--&gt;</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4"/>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Job List</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QListWidget" name="JobListWidget"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="remove_jobButton">
+           <property name="text">
+            <string>&lt;--</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -106,13 +124,6 @@
       <widget class="QListWidget" name="AvailListWidget"/>
      </item>
      <item>
-      <widget class="QPushButton" name="remove_Button">
-       <property name="text">
-        <string>remove</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="playButton">
        <property name="text">
         <string>play</string>
@@ -121,7 +132,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QLabel" name="image_label">
+   <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
       <x>180</x>

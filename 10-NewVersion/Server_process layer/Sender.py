@@ -29,7 +29,6 @@ MINIO_SERVER=sys.argv[11]
 # SERVER_PASSWORD='guest'
 # SERVER_IP='localhost'
 # SERVER_PORT=5672
-
 # FRAME_HOP=30
 # MINIO_USER_FROM_DOCKER_FILE='admin'
 # MINIO_PASS_FROM_DOCKER_FILE='admin1234'
@@ -44,6 +43,8 @@ if ALGORITHM =='face':
     from model.face.object_detection import get_object_position 
 elif ALGORITHM =='eyes':
     from model.eyes.object_detection  import get_object_position 
+elif ALGORITHM =='face_eyes':
+    from model.face_eyes.object_detection  import get_object_position 
 
 def decoding_size(x):
     return x*8
@@ -110,42 +111,28 @@ class apply_procces(Thread):
                                                 credentials)
         self.channel=pika.BlockingConnection(parameters).channel()
     def run(self):
-        file_dump_queue=Queue()
-        file_dump_thread=apply_save_procces(file_dump_queue)
-        file_dump_thread.start()
+        # file_dump_queue=Queue()
+        # file_dump_thread=apply_save_procces(file_dump_queue)
+        # file_dump_thread.start()
         while(True):
             frame=self.queue.get(block=True)
             object_position=get_object_position(frame,'./model/'+ALGORITHM+'/')
             
-            
             if object_position:
                 object_dict={'av':True,'dt':object_position}
                 object_byte=json.dumps(object_dict)
-                # send by rabbitmq   
-                self.channel.basic_publish(
-                        exchange=OUTPUT_EXCHANGE_NAME,
-                        routing_key='',
-                        body=object_byte,
-                        properties=pika.BasicProperties(delivery_mode = 1)
-                        )
-                file_dump_queue.put(object_position)
+                # file_dump_queue.put(object_position)
             else:
                 object_dict={'av':False}
                 object_byte=json.dumps(object_dict)
-                # send by rabbitmq        
-                self.channel.basic_publish(
-                        exchange=OUTPUT_EXCHANGE_NAME,
-                        routing_key='',
-                        body=object_byte,
-                        properties=pika.BasicProperties(delivery_mode = 1)
-                        )
-                
-            # for a,b,c,d in object_position:
-            #     cv.rectangle(frame, (a, b), (c, d), (255, 0, 0), 2)
-            # cv.imshow('frame', frame)
-            # if cv.waitKey(1) == ord('q'):
-            #     print("done")
-
+            
+            # send by rabbitmq
+            self.channel.basic_publish(
+                    exchange=OUTPUT_EXCHANGE_NAME,
+                    routing_key='',
+                    body=object_byte,
+                    properties=pika.BasicProperties(delivery_mode = 1)
+                    )
 
 def dispatch(channel, method, properties, body,reciever_queue):
     frames=np.frombuffer(body,dtype=np.dtype('uint8'))
@@ -162,7 +149,8 @@ def main():
                                             credentials)
     channel=pika.BlockingConnection(parameters).channel()
     channel.basic_qos(prefetch_count=5)
-    result=channel.queue_declare(queue='pr_'+INPUT_EXCHANGE_NAME, durable=False, exclusive=False)
+    result=channel.queue_declare(queue='pr_'+INPUT_EXCHANGE_NAME, durable=False,
+                                 exclusive=False,auto_delete=True)
     queue_name = result.method.queue
     channel.queue_bind(exchange=INPUT_EXCHANGE_NAME,
                     queue=queue_name,routing_key='')

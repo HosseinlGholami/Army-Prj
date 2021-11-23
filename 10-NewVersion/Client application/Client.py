@@ -19,6 +19,8 @@ from ui.ClientUI import Ui_MainWindow  as UI_MainWindow
 REDIS_PORT=6379
 RABBIT_PORT=5672
 
+MINIO_FOLDER_HANDEL="jangal_ex_"
+
 class RunDesignerGUI():
     def __init__(self):
         self.cam_handel=dict()
@@ -49,45 +51,31 @@ class RunDesignerGUI():
         self.ui.showcam_Button.clicked.connect(self.show_cam)
         
     def show_cam(self):
-        # processor_name=self.ui.SelectprocessComboBox.currentText()
-        # if not processor_name=="":
-        #     pid=self.process_handel[processor_name]['proc']['pid']
-        #     if pid == -1:
-        #         model=self.ui.AlgComboBox.currentText()
-        #         self.process_handel[processor_name]['model']=model
-        #         frame_hop=self.ui.process_spinBox.value()
-        #         runstr = "python"
-        #         args = ["Sender.py",
-        #                 self.process_handel[processor_name]['model'],#algorithm
-        #                 self.process_handel[processor_name]['ex'],#input exchange
-        #                 processor_name,
-        #                 self.server_username,
-        #                 self.server_password,
-        #                 self.server_address,
-        #                 self.server_port,
-        #                 str(frame_hop),
-        #                 MINIO_USER_FROM_DOCKER_FILE,
-        #                 MINIO_PASS_FROM_DOCKER_FILE,
-        #                 self.MINIO_SERVER_ADDR,
-        #                 ]
-        #         process=self.process_handel[processor_name]['proc']['mp']
-        #         process.setProgram(runstr)
-        #         process.setArguments(args)
-        #         ok, pid = process.startDetached()
-        #         if ok:
-        #             self.process_handel[processor_name]['proc']['pid']=pid                    
-        #             #prepare data for redis and other side of connection
-        #             update_redis_alg(self.Redis_client,
-        #                              self.process_handel[processor_name]["name"],
-        #                              model,
-        #                              processor_name,#exchange_name,
-        #                              "T",
-        #                              self.process_handel[processor_name]["lv"]
-        #                              )
-        #             self.send_log('starting send meta-data to server')
-        #     else:
-        #         self.send_log('its already activated')
-        pass
+        cam_name=self.ui.CamNameComboBox.currentText()
+        if not cam_name=="":
+            pid=self.cam_handel[cam_name]['proc']['pid']
+            if pid == -1:
+                runstr = "python"
+                args = ["Receiver.py",
+                        cam_name,
+                        self.server_address,
+                        self.server_username,
+                        self.server_password,
+                        str(REDIS_PORT),
+                        str(self.USER_ACESS_LEVEL),
+                        str(RABBIT_PORT),
+                        self.RABBIT_USER,
+                        self.RABBIT_PASS,
+                        ]
+                process=self.cam_handel[cam_name]['proc']['mp']
+                process.setProgram(runstr)
+                process.setArguments(args)
+                ok, pid = process.startDetached()
+                if ok:
+                    self.cam_handel[cam_name]['proc']['pid']=pid                    
+                    #prepare data for redis and other side of connection
+                    self.send_log('show camera :'+cam_name)
+            
     
     def refresh(self):
         active_list_on_server=[]
@@ -114,6 +102,15 @@ class RunDesignerGUI():
         for camera_name in [x for x in self.cam_handel]:
             if not camera_name in active_list_on_server:
                 self.remove_item_while_refresh(camera_name)
+        
+        #lets handel the play back item
+        self.update_storage_for_play_back()
+        
+    def update_storage_for_play_back(self):
+        buckets = self.minioClient.list_buckets()
+        for bucket in buckets:
+            cam_name=bucket.name.split(MINIO_FOLDER_HANDEL)[1]
+            self.ui.playbackCamNameComboBox.addItem(cam_name)
                         
     def remove_item_while_refresh(self,key):
         #1-az combobox pakesh kon
@@ -159,8 +156,8 @@ class RunDesignerGUI():
                                  secret_key=minio_credentials[b'psw'].decode(),
                                  secure=False)
         rabbit_credentials=self.Redis_client.hgetall("DEF_RABBIT")
-        self.RABBIT_USER=minio_credentials[b'usr'].decode()
-        self.RABBIT_PASS=minio_credentials[b'psw'].decode()        
+        self.RABBIT_USER=rabbit_credentials[b'usr'].decode()
+        self.RABBIT_PASS=rabbit_credentials[b'psw'].decode()        
         client_redis_lvls=self.Redis_client.hgetall("USR_REDIS_ACL")
         self.USER_ACESS_LEVEL=int(client_redis_lvls[self.server_username.encode()])
         

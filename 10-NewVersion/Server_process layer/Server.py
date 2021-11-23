@@ -289,12 +289,16 @@ class RunDesignerGUI():
             self.ui.AlgComboBox.addItem(alg)
      
     def closeEvent(self):
-        # del self.Redis_client
-        # del self.minioClient
-        #TODO: remove all the alg inside redis
-        #and delete and close all process
-        pass
-
+        for processor_name in [x for x in self.process_handel]:
+            pid=self.process_handel[processor_name]['proc']['pid']
+            if pid > 0:
+                p = psutil.Process(pid)
+                p.terminate()
+            self.Redis_client.hdel(self.process_handel[processor_name]["name"]["alg"])
+            del self.process_handel[processor_name]
+        del self.process_handel
+        del self.Redis_client
+        del self.minioClient
             
 
 if __name__ == "__main__":

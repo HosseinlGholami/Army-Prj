@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="acamTab">
      <property name="toolTip">
@@ -101,7 +101,7 @@
      <attribute name="title">
       <string>Playback Tab</string>
      </attribute>
-     <widget class="QComboBox" name="CamNameComboBox_2">
+     <widget class="QComboBox" name="playbackCamNameComboBox">
       <property name="geometry">
        <rect>
         <x>110</x>
@@ -111,7 +111,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="addc_Button_2">
+     <widget class="QPushButton" name="playback_Button">
       <property name="geometry">
        <rect>
         <x>220</x>

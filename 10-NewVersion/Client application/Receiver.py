@@ -13,25 +13,30 @@ import requests
 
 from ui.ReceiveUI import Ui_MainWindow  as UI_MainWindow
 
-# USERNAME=sys.argv[1]
-# PASSWORD=sys.argv[2]
-# EXCHANGE_NAME= sys.argv[3]
 
-CAM_NAME='c1'
+CAM_NAME=sys.argv[1]
+SERVER_ADDRESS=sys.argv[2]
+REDIS_USER=sys.argv[3]
+REDIS_PASS=sys.argv[4]
+REDIS_PORT=int(sys.argv[5])
+USER_ACCESS_LEVEL=int(sys.argv[6])
+RABBIT_PORT=int(sys.argv[7])
+RABBIT_USERNAME=sys.argv[8]
+RABBIT_PASSWORD=sys.argv[9]
 
-REDIS_USER="new_guest"
-REDIS_PASS="1234"
-REDIS_PORT=6379
 
-INPUT_EXCAHNGE= 'ex_'+CAM_NAME
+# CAM_NAME='c1'
+# SERVER_ADDRESS='localhost'
+# REDIS_USER="new_guest"
+# REDIS_PASS="1234"
+# REDIS_PORT=6379
+# USER_ACCESS_LEVEL=1
+# RABBIT_USERNAME='guest'
+# RABBIT_PASSWORD='guest'
+# RABBIT_PORT=5672
 
-USER_ACCESS_LEVEL=1
-
-RABBIT_USERNAME='guest'
-RABBIT_PASSWORD='guest'
-SERVER_ADDRESS='localhost'
-RABBIT_PORT=5672
 RABBIT_VHOST='/'
+INPUT_EXCAHNGE= 'ex_'+CAM_NAME
 
 def delete_queue(host, port, user, passwd,queue_name):
     API_ENDPOINT = f"http://{host}:1{port}/api/queues/%2f/{queue_name}"
@@ -89,6 +94,16 @@ class RunDesignerGUI():
     def __init__(self):
         self.processor_handel=dict()
         self.active_processor_flag=False
+        self.position=[]
+        self.Redis_client = redis.Redis(host=SERVER_ADDRESS, port=REDIS_PORT,
+                                       username=REDIS_USER,
+                                       password=REDIS_PASS)        
+        self.credentials = pika.PlainCredentials(RABBIT_USERNAME, RABBIT_PASSWORD)
+        self.parameters  = pika.ConnectionParameters(SERVER_ADDRESS,
+                                        RABBIT_PORT,
+                                        RABBIT_VHOST,
+                                        self.credentials)
+        
         app = QtWidgets.QApplication(sys.argv)
         self.MainWindow = QtWidgets.QMainWindow()
         
@@ -97,7 +112,7 @@ class RunDesignerGUI():
 
         self.widget_action()
         self.control_server_and_signals()
-                
+        
         self.MainWindow.show()
         sys.exit(app.exec_())
     
@@ -108,8 +123,10 @@ class RunDesignerGUI():
     def active_process(self):
         process_name=self.ui.ModelComboBox.currentText()
         self.metadata_queue_name='pr_'+str(time.time())
-        if process_name!=None:
+        if process_name!="None":
             self.active_processor_flag=True
+            self.connection2=pika.BlockingConnection(self.parameters)
+            self.metadata_channel=self.connection2.channel()
             self.metadata_rbmq_thread=Rbmq(self.metadata_Signal.change_pixmap_signal,
                                         self.metadata_channel,
                                         self.processor_handel[process_name]["ex"],
@@ -121,17 +138,17 @@ class RunDesignerGUI():
         else:
             if self.active_processor_flag==True:
                 self.metadata_rbmq_thread.terminate()
+                self.position=[]
     
     def dispatch_metadata(self, channel, method, properties, body,Signal):
-        print("data recieved")
         recieved_data=json.loads(body)
-        print(recieved_data)
         if recieved_data['av']:
-            print(recieved_data['dt'])
-        
-        Signal.emit(np.array([0,0,0,0]))
+            Signal.emit(np.array(recieved_data['dt']))
+        else:
+            Signal.emit(np.array([]))
     
     def refresh(self):
+        self.ui.ModelComboBox.clear()
         models=self.Redis_client.hget(CAM_NAME,b"alg")
         if models:
             model_dict=json.loads(models)
@@ -150,19 +167,9 @@ class RunDesignerGUI():
             self.ui.ModelComboBox.addItem("None")
 
     def control_server_and_signals(self):
-        self.Redis_client = redis.Redis(host=SERVER_ADDRESS, port=REDIS_PORT,
-                                       username=REDIS_USER,
-                                       password=REDIS_PASS)        
-        self.credentials = pika.PlainCredentials(RABBIT_USERNAME, RABBIT_PASSWORD)
-        self.parameters  = pika.ConnectionParameters(SERVER_ADDRESS,
-                                        RABBIT_PORT,
-                                        RABBIT_VHOST,
-                                        self.credentials)
         self.connection1=pika.BlockingConnection(self.parameters)
-        self.connection2=pika.BlockingConnection(self.parameters)
         #client channels
         self.frame_channel=self.connection1.channel()
-        self.metadata_channel=self.connection2.channel()
         #client signals
             #frame signals
         self.frame_Signal=frame_Signals()
@@ -213,14 +220,13 @@ class RunDesignerGUI():
         return QPixmap.fromImage(p)
     
     def draw_object_posion_on_frames(self,cv_image):
-        for a,b,c,d in self.position:
-            cv2.rectangle(cv_image, (a, b), (c, d), (100, 100, 100), 3)
+        if len(self.position)>0:
+            for a,b,c,d in self.position:
+                    cv2.rectangle(cv_image, (a, b), (c, d), (100, 100, 100), 3)
         return cv_image
     def change_process_flage(self,meta_data):
-        self.position=[(472,138,609,275),(500,140,650,200)]
-        print("recieved_meta_data inside ui")
-        pass
-    
+        self.position=meta_data
+        
 
 if __name__ == "__main__":
     RunDesignerGUI()

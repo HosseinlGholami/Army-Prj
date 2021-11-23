@@ -16,9 +16,9 @@ def get_object_position(frame,loc):
     for x,y,w,h in face:
         gray_face=gray[y:y+h,x:x+w]
         eye_item=eyes.detectMultiScale(gray_face,1.3,5)
-        eye_list.append((x,y,x+w,y+h))
+        eye_list.append((int(x),int(y),int(x+w),int(y+h)))
         for a,b,c,d in eye_item:
-            eye_list.append((x+a,y+b,x+a+c,y+b+d))
+            eye_list.append((int(x+a),int(y+b),int(x+a+c),int(y+b+d)))
     return eye_list
 
 
