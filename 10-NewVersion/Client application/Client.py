@@ -3,7 +3,7 @@ import redis
 from minio import Minio
 import os
 import psutil
-
+from PyQt5.QtCore import QProcess
 from PyQt5 import QtWidgets,QtGui,QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -21,6 +21,28 @@ RABBIT_PORT=5672
 
 MINIO_FOLDER_HANDEL="jangal_ex_"
 
+class Playback_process(QObject):
+    def __init__(self,minio_server_address,minio_user,minio_pass):
+        self.playback_app_process=QProcess()
+        self.MINIO_SERVER_ADDR=minio_server_address
+        self.MINIO_USER=minio_user
+        self.MINIO_PASS=minio_pass
+    def run_playback_process(self,cam_name):
+        if not cam_name=="":
+            if self.playback_app_process.state()!=2:
+                runstr = "python"
+                args = ["playback.py",
+                        cam_name,
+                        self.MINIO_SERVER_ADDR,
+                        self.MINIO_USER,
+                        self.MINIO_PASS,
+                        ]
+                self.playback_app_process.start(runstr,args)
+                self.Flage=True
+                return True
+            else:
+                return False
+        
 class RunDesignerGUI():
     def __init__(self):
         self.cam_handel=dict()
@@ -49,33 +71,50 @@ class RunDesignerGUI():
         #main page
         self.ui.Refresh_Button.clicked.connect(self.refresh)
         self.ui.showcam_Button.clicked.connect(self.show_cam)
+        self.ui.playback_Button.clicked.connect(self.Run_playpack_app)
+    
+    def Run_playpack_app(self):
+        cam_name=self.ui.playbackCamNameComboBox.currentText()
+        if not cam_name=="":
+            if self.playback_process.run_playback_process(cam_name):
+                self.send_log('playback window runs')
+            else:
+                self.send_log("A playback window is already open, close that first")
+    
+    
         
     def show_cam(self):
-        cam_name=self.ui.CamNameComboBox.currentText()
-        if not cam_name=="":
-            pid=self.cam_handel[cam_name]['proc']['pid']
-            if pid == -1:
-                runstr = "python"
-                args = ["Receiver.py",
-                        cam_name,
-                        self.server_address,
-                        self.server_username,
-                        self.server_password,
-                        str(REDIS_PORT),
-                        str(self.USER_ACESS_LEVEL),
-                        str(RABBIT_PORT),
-                        self.RABBIT_USER,
-                        self.RABBIT_PASS,
-                        ]
-                process=self.cam_handel[cam_name]['proc']['mp']
-                process.setProgram(runstr)
-                process.setArguments(args)
-                ok, pid = process.startDetached()
-                if ok:
-                    self.cam_handel[cam_name]['proc']['pid']=pid                    
-                    #prepare data for redis and other side of connection
-                    self.send_log('show camera :'+cam_name)
-            
+        pass
+        # cam_name=self.ui.CamNameComboBox.currentText()
+        
+        #     pid=self.cam_handel[cam_name]['proc']['pid']
+        #     if pid == -1:
+        #         runstr = "python"
+        #         args = ["Receiver.py",
+        #                 cam_name,
+        #                 self.server_address,
+        #                 self.server_username,
+        #                 self.server_password,
+        #                 str(REDIS_PORT),
+        #                 str(self.USER_ACESS_LEVEL),
+        #                 str(RABBIT_PORT),
+        #                 self.RABBIT_USER,
+        #                 self.RABBIT_PASS,
+        #                 ]
+        #         process=self.cam_handel[cam_name]['proc']['mp']
+        #         process.setProgram(runstr)
+        #         process.setArguments(args)
+        #         process.finished.connect(self.showcam_closed)
+        #         ok, pid = process.startDetached()
+        #         if ok:
+        #             self.cam_handel[cam_name]['proc']['pid']=pid                    
+        #             #prepare data for redis and other side of connection
+        #             self.send_log('show camera :'+cam_name)
+        #     else:
+        #         self.send_log("this cam window is already open, close that first")
+    # def showcam_closed(self, exitCode, exitStatus):
+    #     self.playback_app_process["pid"]=-1
+    #     print(exitCode, exitStatus)
     
     def refresh(self):
         active_list_on_server=[]
@@ -110,7 +149,9 @@ class RunDesignerGUI():
         buckets = self.minioClient.list_buckets()
         for bucket in buckets:
             cam_name=bucket.name.split(MINIO_FOLDER_HANDEL)[1]
-            self.ui.playbackCamNameComboBox.addItem(cam_name)
+            index_ = self.ui.playbackCamNameComboBox.findText(cam_name)
+            if index_ ==-1:
+                self.ui.playbackCamNameComboBox.addItem(cam_name)
                         
     def remove_item_while_refresh(self,key):
         #1-az combobox pakesh kon
@@ -151,9 +192,14 @@ class RunDesignerGUI():
     def connect_to_others_servers(self):
         minio_credentials=self.Redis_client.hgetall("DEF_MINIO")
         self.MINIO_SERVER_ADDR=f"{self.server_address}:9000"
+        self.MINIO_USER=minio_credentials[b'usr'].decode()
+        self.MINIO_PASS=minio_credentials[b'psw'].decode()
+        self.playback_process=Playback_process(self.MINIO_SERVER_ADDR,
+                                               self.MINIO_USER,
+                                               self.MINIO_PASS)
         self.minioClient = Minio(self.MINIO_SERVER_ADDR,
-                                 access_key=minio_credentials[b'usr'].decode(),
-                                 secret_key=minio_credentials[b'psw'].decode(),
+                                 access_key=self.MINIO_USER,
+                                 secret_key=self.MINIO_PASS,
                                  secure=False)
         rabbit_credentials=self.Redis_client.hgetall("DEF_RABBIT")
         self.RABBIT_USER=rabbit_credentials[b'usr'].decode()

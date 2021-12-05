@@ -512,7 +512,7 @@
        <string>Remove user</string>
       </property>
      </widget>
-     <widget class="QComboBox" name="lvl_usr_ComboBox_2">
+     <widget class="QComboBox" name="usr_ComboBox">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -532,10 +532,10 @@
        </rect>
       </property>
       <property name="text">
-       <string>Level of Access</string>
+       <string>User Selection</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="add_user_Button_2">
+     <widget class="QPushButton" name="rmv_user_Button">
       <property name="geometry">
        <rect>
         <x>270</x>

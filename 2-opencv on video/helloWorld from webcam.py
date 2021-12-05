@@ -2,7 +2,7 @@ from time import time
 import cv2 as cv
 import pickle
 
-cap = cv.VideoCapture(0)#rtsp://192.168.1.4:12525/h264_ulaw.sdp')
+cap = cv.VideoCapture("rtsp://192.168.1.165:554/user=admin_password=_channel=1_stream=0.sdp?real_stream")#0)#rtsp://192.168.1.4:12525/h264_ulaw.sdp')
 
 # Define the codec and create VideoWriter object
 

@@ -72,8 +72,18 @@ class RunDesignerGUI():
         self.ui.delete_store_cam_Button.clicked.connect(self.clear_storage)
         #add_usr tab
         self.ui.add_user_Button.clicked.connect(self.add_usr)
-        #TODO: reomve user
-    
+        #reomve user
+        self.ui.rmv_user_Button.clicked.connect(self.remove_usr)
+        
+    def remove_usr(self):
+        username=self.ui.usr_Username_lineEdit.text()
+        if not (username==""):
+            self.Redis_client.hdel('USR_REDIS_ACL', username)
+            self.Redis_client.acl_deluser(username)
+            index_ = self.ui.usr_ComboBox.findText(username)
+            self.ui.usr_ComboBox.removeItem(index_)
+            self.send_log('user removed successfully')
+            
     def add_usr(self):
         username=self.ui.usr_Username_lineEdit.text()
         password=self.ui.usr_Password_lineEdit.text()
@@ -82,6 +92,7 @@ class RunDesignerGUI():
         self.Redis_client.acl_setuser(username, enabled=True, nopass=False, passwords="+"+password,
                                    commands=["+HGETALL","+ACL","+SCAN"],categories=['+@hash'],
                                    keys=["*"])
+        self.ui.usr_ComboBox.addItem(username)
         self.send_log('user added successfully')
             
     def active_camera(self):
@@ -127,8 +138,8 @@ class RunDesignerGUI():
             self.Redis_client.delete(cam_name)
             del self.cam_handel[cam_name]
             
-            # #TODO: this might be a littel tricky if some one is one the queue!
-            # #needs more attention!
+            #TODO: this might be a littel tricky if some one is one the queue!
+            #needs more attention!
             # res=delete_exchange(RABBIT_SERVER_IP,RABBIT_PORT,self.username,self.password,RABBIT_EXCHANGE_HANDEL+cam_name)
             # print(res)
             

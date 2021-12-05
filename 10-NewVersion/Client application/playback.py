@@ -12,16 +12,16 @@ import cv2 as cv
 from minio import Minio
 import time
 
+CAM_NAME=sys.argv[1]
+MINIO_SERVER_ADDR=sys.argv[2]
+MINIO_USER=sys.argv[3]
+MINIO_PASS=sys.argv[4]
+
+
 # CAM_NAME="c1"
 # MINIO_SERVER_ADDR='localhost:9000'
-# MINIO_USER_FROM_DOCKER_FILE='admin'
-# MINIO_PASS_FROM_DOCKER_FILE='admin1234'
-
-
-CAM_NAME="c1"
-MINIO_SERVER_ADDR='localhost:9000'
-MINIO_USER_FROM_DOCKER_FILE='admin'
-MINIO_PASS_FROM_DOCKER_FILE='admin1234'
+# MINIO_USER='admin'
+# MINIO_PASS='admin1234'
 
 
 DOWNLOAD_PATH=f"./download/{CAM_NAME}/"
@@ -34,10 +34,10 @@ class video_player_thread(QThread):
         self.signal=Signal
         self.video_name=Name
     def run(self):
-        cap = cv.VideoCapture(DOWNLOAD_PATH+self.video_name)
+        self.cap = cv.VideoCapture(DOWNLOAD_PATH+self.video_name)
         while(True):
             # Capture frame-by-frame
-            ret, frame = cap.read()
+            ret, frame = self.cap.read()
             cv.waitKey(1)
             # if frame is read correctly ret is True
             if not ret:
@@ -45,7 +45,10 @@ class video_player_thread(QThread):
                 break
             else:
                 self.signal.emit(frame)
-        cap.release()
+        self.cap.release()
+    def ends(self):
+        self.cap.release()
+        raise Exception('close', 'videoplayerthread')
 
 class download_Signals(QWidget):
     change_pixmap_signal = pyqtSignal(str)
@@ -78,8 +81,9 @@ class minio_downloader(Thread):
             self.signal.emit(object_name_convertor(file_name))
 class RunDesignerGUI():
     def __init__(self):
-        self.minioClient = Minio(MINIO_SERVER_ADDR, access_key=MINIO_USER_FROM_DOCKER_FILE, secret_key=MINIO_PASS_FROM_DOCKER_FILE, secure=False)
+        self.minioClient = Minio(MINIO_SERVER_ADDR, access_key=MINIO_USER, secret_key=MINIO_PASS, secure=False)
         app = QtWidgets.QApplication(sys.argv)
+        app.aboutToQuit.connect(self.closeEvent)
         self.MainWindow = QtWidgets.QMainWindow()
 
         self.ui = Ui_MainWindow()
@@ -187,5 +191,12 @@ class RunDesignerGUI():
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
         p = convert_to_Qt_format.scaled(self.ui.image_label.width(), self.ui.image_label.height(), Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
+    def closeEvent(self):
+        del self.minioClient
+        self.MainWindow.close()
+        self.video_player.ends()
+        raise Exception('close', 'playback')
+        
+
 if __name__ == "__main__":
     RunDesignerGUI()    
