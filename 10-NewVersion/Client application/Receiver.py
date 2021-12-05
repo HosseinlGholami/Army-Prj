@@ -89,6 +89,7 @@ class Rbmq(QThread):
                         )
     def run(self):
         self.channel.start_consuming()
+    
         
 class RunDesignerGUI():
     def __init__(self):
@@ -105,6 +106,7 @@ class RunDesignerGUI():
                                         self.credentials)
         
         app = QtWidgets.QApplication(sys.argv)
+        app.aboutToQuit.connect(self.closeEvent)
         self.MainWindow = QtWidgets.QMainWindow()
         
         self.ui = UI_MainWindow()
@@ -115,6 +117,11 @@ class RunDesignerGUI():
         
         self.MainWindow.show()
         sys.exit(app.exec_())
+    def closeEvent(self):
+        del self.Redis_client
+        self.MainWindow.close()
+        self.metadata_rbmq_thread.terminate()
+        raise Exception('close', 'playback')
     
     def widget_action(self):
         self.ui.Active_Button.clicked.connect(self.active_process)
