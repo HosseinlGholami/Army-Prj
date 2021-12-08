@@ -1,0 +1,2 @@
+python -m PyQt5.uic.pyuic -x ServerUI.ui -o ServerUI.py
+python -m PyQt5.uic.pyuic -x loginServerUI.ui -o loginServerUI.py

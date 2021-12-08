@@ -1,0 +1,40 @@
+version: '2'
+
+networks:
+  app-tier:
+    driver: bridge
+    
+services:
+  queue:
+    build: rbmq/.
+    container_name: rabbitmq
+    ports:
+      - 5672:5672 
+      - 15672:15672
+    networks:
+      - app-tier  
+  minio:
+    image: "minio/minio"
+    restart: always
+    environment:
+      MINIO_ACCESS_KEY: admin
+      MINIO_SECRET_KEY: admin1234
+    volumes:
+      - "./Data:/data"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    networks:
+      - app-tier
+  cache:
+    image: redis:latest
+    container_name: redis
+    ports:
+        - 6379:6379
+    volumes:
+        - ./redis/config/redis.conf:/redis.conf
+        # s- ./redis/Data:/data
+    command: [ "redis-server", "/redis.conf" ]
+    networks:
+      - app-tier
