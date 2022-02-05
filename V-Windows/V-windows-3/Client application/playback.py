@@ -12,16 +12,16 @@ import cv2 as cv
 from minio import Minio
 import time
 
-# CAM_NAME=sys.argv[1]
-# MINIO_SERVER_ADDR=sys.argv[2]
-# MINIO_USER=sys.argv[3]
-# MINIO_PASS=sys.argv[4]
+CAM_NAME=sys.argv[1]
+MINIO_SERVER_ADDR=sys.argv[2]
+MINIO_USER=sys.argv[3]
+MINIO_PASS=sys.argv[4]
 
 
-CAM_NAME="c1"
-MINIO_SERVER_ADDR='localhost:9000'
-MINIO_USER='admin'
-MINIO_PASS='admin1234'
+# CAM_NAME="c1"
+# MINIO_SERVER_ADDR='localhost:9000'
+# MINIO_USER='admin'
+# MINIO_PASS='admin1234'
 
 
 DOWNLOAD_PATH=f"./download/{CAM_NAME}/"

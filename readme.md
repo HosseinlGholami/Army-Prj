@@ -1,10 +1,6 @@
 # TODO:
 
-cv.VideoCapture(index, apiPreference) 
-
-use apiPreference for dont decode the frame ---> should be deep on it!
-
----------------------------server app
+---------------------------server app----> BIKHIYAL SHODAM
 
 * coding and decoding on client and server application--> https://www.dacast.com/blog/video-streaming-protocol/
 
@@ -12,8 +8,10 @@ use apiPreference for dont decode the frame ---> should be deep on it!
   
   
 
-# Next version 
+# Next version if I wana develop it by my self
 
 -------------------------------
 
-**add camera sender inside docker in to the  add_camera function 
+** check  make use of ffmpeg to code and decode again. 
+
+** add process inside the 
